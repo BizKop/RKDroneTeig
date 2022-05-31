@@ -1,0 +1,432 @@
+<html>
+<head>
+    <title>Simple Map</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+
+      a.button4{
+        display:inline-block;
+        padding:0.3em 1.2em;
+        margin:0 0.1em 0.1em 0;
+        border:0.16em solid rgba(255,255,255,0);
+        border-radius:2em;
+        box-sizing: border-box;
+        text-decoration:none;
+        font-family:'Roboto',sans-serif;
+        font-weight:300;
+        color:#FFFFFF;
+        text-shadow: 0 0.04em 0.04em rgba(0,0,0,0.35);
+        text-align:center;
+        transition: all 0.2s;
+        }
+        a.button4:hover{
+        border-color: rgba(255,255,255,1);
+        }
+        @media all and (max-width:30em){
+        a.button4{
+        display:block;
+        margin:0.6em auto;
+        }
+    }
+             
+    </style>
+    <script src="xmlwriter.js" type="text/javascript"></script>
+  </head>
+<body>
+<!-- <form method="POST">
+    <p>
+    latitude:<input type="text" name="latitude" placeholder="59.824540">
+    </p>
+ 
+    <p>
+    longitude:<input type="text" name="longitude" placeholder="10.419550">
+    </p>
+  -->
+    <a href="javascript:toKML();" class="button4" style="background-color:#f14e4e">Generate & Download KML</a>
+    latitude:<input type="text" id="latitude" value="59.824540">
+    longitude:<input type="text" id="longitude" value="10.419550">
+    <a href="javascript:initMap();" class="button4" style="background-color:#4e9af1">Move center to geolocation</a>
+
+    <!-- <input type="button" value="Generate & Download KML" onclick="toKML()" /> -->
+<!-- </form> -->
+<script async 
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBJsSfRxk6h_MBkD7XF7F4IMHh4G_q8Fj4&libraries=drawing,geometry&callback=initMap">
+    </script>
+<div id="map"></div>
+<textarea id="kmlString" style="width:100%; height:300px"></textarea>
+
+    <script>
+      var map;
+      var mapOverlays = new Array();
+      var drawingManager; 
+      var flightPath;
+      var centerLat;
+      var centerLng;
+
+      function initMap() {
+        // centerLat = document.querySelector('latitude').value;
+        // centerLng = document.querySelector('longitude').value;
+        centerLat = Number(document.getElementById("latitude").value);
+        centerLng = Number(document.getElementById("longitude").value);
+        map = new google.maps.Map(document.getElementById('map'), {
+          center: {lat: centerLat, lng: centerLng},
+        //   center: {lat: 59.824540, lng: 10.419550},
+          zoom: 18,
+          mapTypeId: "satellite",
+           q: {lat: centerLat, lng: centerLng},
+        //   maptype: satellite
+        });
+        drawingManager = new google.maps.drawing.DrawingManager();
+        drawingManager.setMap(map);
+
+        CreateFlightPath(centerLat, centerLng, 100, 300);
+
+      }
+
+      function CreateFlightPath(teigCenterLat, teigCenterLng, teigWidth, teigHeight) {
+        teigLowerLeftLat = CreateOffsetLatitude(teigCenterLat,-(teigWidth/2));
+        teigLowerLeftLng = CreateOffsetLongtitude(teigCenterLng,-(teigHeight/2));
+        teigLowerRightLat = CreateOffsetLatitude(teigCenterLat, (teigWidth/2));
+        teigLowerRightLng = teigLowerLeftLng;
+        teigUpperLeftLat = teigLowerLeftLat;
+        teigUpperLeftLng = CreateOffsetLongtitude(teigCenterLng, (teigHeight/2));
+        teigUpperRightLat = CreateOffsetLatitude(teigCenterLat, (teigWidth/2));
+        teigUpperRightLng = CreateOffsetLongtitude(teigCenterLng, (teigHeight/2));
+
+        const flightPlanCoordinates = [
+            { lat: teigLowerLeftLat, lng: teigLowerLeftLng },
+            { lat: teigUpperLeftLat, lng: teigUpperLeftLng },
+            { lat: teigUpperRightLat, lng: teigUpperRightLng },
+            { lat: teigLowerRightLat, lng: teigLowerRightLng },
+            { lat: teigLowerLeftLat, lng: teigLowerLeftLng },
+        ];
+
+        iconSequence = {
+            icon: 
+            {
+                path: google.maps.SymbolPath.FORWARD_OPEN_ARROW
+            },
+            repeat: '20%'
+        }
+
+        flightPath = new google.maps.Polyline({
+            path: flightPlanCoordinates,
+            geodesic: true,
+            strokeColor: "#C4FF00",
+            strokeOpacity: 1.0,
+            strokeWeight: 4,
+            draggable: true,
+            editable: true,
+            icons: [iconSequence],
+        });
+
+        flightPath.setMap(map);
+        flightPath.type = "polyline";
+        mapOverlays.push( flightPath );
+        google.maps.event.addListener(flightPath, 'dragend', getPolygonCoords);
+        google.maps.event.addListener(flightPath.getPath(), 'insert_at', getPolygonCoords);
+        google.maps.event.addListener(flightPath.getPath(), 'remove_at', getPolygonCoords);
+        google.maps.event.addListener(flightPath.getPath(), 'set_at', getPolygonCoords);
+
+       }
+
+       function getPolygonCoords() {
+        var geoArray = flightPath.getPath();
+            geoArray.forEach(element => {
+                console.log(element.toString());
+            });
+            console.log("Length: ",google.maps.geometry.spherical.computeLength(geoArray), " meters");
+       }
+
+       function CreateSearchPattern(teigCenterLat, teigCenterLng){
+        //google.maps.geometry.poly.containsLocation;
+        //google.maps.geometry.poly.isLocationOnEdge 
+      }
+       
+       function setCenterMarker() {
+           //TODO: Not implemented
+       }
+
+       function download(filename, text) {
+           var element = document.createElement('a');
+            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+            element.setAttribute('download', filename);
+
+            element.style.display = 'none';
+            document.body.appendChild(element);
+
+            element.click();
+
+            document.body.removeChild(element);
+        }
+
+       function CreateOffsetLatitude(orgLatitude, offsetMeters) {
+        //Earth’s radius, sphere
+        R=6378137;
+        Pi = 3.14159;
+
+        //Coordinate offsets in radians
+        dLat = offsetMeters/R;
+                
+        //OffsetPosition, decimal degrees
+        return orgLatitude + dLat * 180/Pi;
+       }
+
+       function CreateOffsetLongtitude(orgLongtitude, offsetMeters) {
+        //Earth’s radius, sphere
+        R=6378137
+        Pi = 3.14159;
+
+        //Coordinate offsets in radians
+        dLon = offsetMeters/(R*Math.cos(Pi*orgLongtitude/180))
+
+        //OffsetPosition, decimal degrees
+        return orgLongtitude + dLon * 180/Pi;
+       }
+
+       function toKML(flightAltitude){
+           //debugger;
+        var result = mapToObject();
+        var xw = new XMLWriter('UTF-8');
+        
+        // Set default altitude to 50m if not set by user
+        if(isNaN(flightAltitude)){
+	        flightAltitude = 50;
+        }else{
+            if (flightAltitude < 0 || flightAltitude > 120 ) {
+                flightAltitude = 50;  
+            }
+        }   
+
+        const today = new Date();
+        var flightMissionName = "FlightMission-" + formatDate(today, 'ddmmyyyy-hhmi');
+        var flightMissionLength = " - Length: " + google.maps.geometry.spherical.computeLength(flightPath.getPath()) + " meters";
+
+        xw.formatting = 'indented';//add indentation and newlines
+        xw.indentChar = ' ';//indent with spaces
+        xw.indentation = 2;//add 2 spaces per level
+
+        xw.writeStartDocument( );
+        xw.writeStartElement( 'kml' );
+        xw.writeAttributeString( "xmlns", "http://www.opengis.net/kml/2.2" );
+        xw.writeStartElement('Document');
+
+        for( var i = 0; i < result.overlays.length; i++ ){
+            xw.writeStartElement('Placemark');
+            xw.writeStartElement('name');
+            xw.writeCDATA( flightMissionName );//result.overlays[i].title );
+            xw.writeEndElement();
+            xw.writeStartElement('description');
+            xw.writeCDATA( "Teig flightpath for " + flightMissionName + flightMissionLength + " - Flying at " + flightAltitude + " meters");
+            xw.writeEndElement();
+            if( result.overlays[i].type == "marker" ){
+
+                xw.writeStartElement('Point');
+                xw.writeElementString('extrude', '1');
+                xw.writeElementString('altitudeMode', 'relativeToGround');
+                xw.writeElementString('coordinates', result.overlays[i].position.lng.toString()+","+result.overlays[i].position.lat.toString()+ "," + flightAltitude);
+                xw.writeEndElement();
+
+            }else if( result.overlays[i].type == "polygon" || result.overlays[i].type == "rectangle" || result.overlays[i].type == "circle" ){
+                xw.writeStartElement('Polygon');
+                xw.writeElementString('extrude', '1');
+                xw.writeElementString('altitudeMode', 'relativeToGround');
+
+                if( result.overlays[i].type == "rectangle" ){
+                    //its a polygon
+                    xw.writeStartElement('outerBoundaryIs');
+                    xw.writeStartElement('LinearRing');
+                    xw.writeStartElement( "coordinates" );
+                    xw.writeString( result.overlays[i].bounds.sw.lng + "," + result.overlays[i].bounds.sw.lat + "," + flightAltitude );
+                    xw.writeString( result.overlays[i].bounds.ne.lng + "," + result.overlays[i].bounds.sw.lat + "," + flightAltitude );
+                    xw.writeString( result.overlays[i].bounds.ne.lng + "," + result.overlays[i].bounds.ne.lat + "," + flightAltitude );
+                    xw.writeString( result.overlays[i].bounds.sw.lng + "," + result.overlays[i].bounds.ne.lat + "," + flightAltitude );
+                    xw.writeEndElement();
+                    xw.writeEndElement();
+                    xw.writeEndElement();
+                }else if (result.overlays[i].type == "circle"){
+                    //its a polygon, approximate a circle by a circular 64 sided polygon.
+                    xw.writeStartElement('outerBoundaryIs');
+                    xw.writeStartElement('LinearRing');
+                    xw.writeStartElement( "coordinates" );
+                    var d2r = Math.PI / 180;   // degrees to radians
+                    var r2d = 180 / Math.PI;   // radians to degrees
+                    var earthsradius = 6378137; // 6378137 is the radius of the earth in meters
+                    var dir = 1; // clockwise
+
+                    var points = 64;
+
+                    // find the raidus in lat/lon
+                    var rlat = (result.overlays[i].radius / earthsradius) * r2d;
+                    var rlng = rlat / Math.cos(result.overlays[i].center.lat * d2r);
+
+                    var extp = new Array();
+                    if (dir==1)     {var start=0;var end=points+1} // one extra here makes sure we connect the line
+                    else            {var start=points+1;var end=0}
+                    for (var j=start; (dir==1 ? j < end : j > end); j=j+dir){
+                        var theta = Math.PI * (j / (points/2));
+                        ey = result.overlays[i].center.lng + (rlng * Math.cos(theta)); // center a + radius x * cos(theta)
+                        ex = result.overlays[i].center.lat + (rlat * Math.sin(theta)); // center b + radius y * sin(theta)
+                        xw.writeString( ey + "," + ex + "," + flightAltitude );
+                    }
+                    xw.writeEndElement();
+                    xw.writeEndElement();
+                    xw.writeEndElement();
+                }else{
+                    for( var j=0; j < result.overlays[i].paths.length; j++ ){
+                        if( j==0 ){
+                            xw.writeStartElement('outerBoundaryIs');
+                        }else{
+                            xw.writeStartElement('innerBoundaryIs');
+                        }
+                        xw.writeStartElement('LinearRing');
+                        xw.writeStartElement( "coordinates" );
+                        for( var k=0; k < result.overlays[i].paths[j].length; k++ ){
+                            xw.writeString( result.overlays[i].paths[j][k].lng + "," + result.overlays[i].paths[j][k].lat + "," + flightAltitude );
+                        }
+                        xw.writeEndElement();
+                        xw.writeEndElement();
+                        xw.writeEndElement();
+                    }
+                }
+                xw.writeEndElement();
+
+            }else if( result.overlays[i].type == "polyline" ){
+                xw.writeStartElement('LineString');
+                xw.writeElementString('extrude', '1');
+                xw.writeElementString('altitudeMode', 'relativeToGround');
+                xw.writeStartElement( "coordinates" );
+                for( var j=0; j < result.overlays[i].path.length; j++ ){
+                    xw.writeString( result.overlays[i].path[j].lng + "," + result.overlays[i].path[j].lat + "," + flightAltitude );
+                }
+                xw.writeEndElement();
+                xw.writeEndElement();
+
+            }
+
+            xw.writeEndElement(); // END PlaceMarker
+        }
+
+        xw.writeEndElement();
+        xw.writeEndElement();
+        xw.writeEndDocument();
+
+        var xml = xw.flush(); //generate the xml string
+        xw.close();//clean the writer
+        xw = undefined;//don't let visitors use it, it's closed
+        //set the xml
+        document.getElementById('kmlString').value = xml;
+
+        // Start file download.
+        download(flightMissionName + ".kml",xml);
+    }
+
+    function formatDate(date, format) {
+        const map = {
+            mm: ("0" + (date.getMonth() + 1)).slice(-2),
+            dd: ("0" + date.getDate()).slice(-2),
+            yyyy: date.getFullYear(),
+            yy: date.getFullYear().toString().slice(-2),
+            hh: ("0" + date.getHours()).slice(-2),
+            mi: ("0" + date.getMinutes()).slice(-2)
+        }
+
+        return format.replace(/mm|dd|yyyy|yy|hh|mi/gi, matched => map[matched])
+    }
+
+    function mapToObject(){
+        var tmpMap = new Object;
+        var tmpOverlay, paths;
+        tmpMap.zoom = map.getZoom();
+        tmpMap.tilt = map.getTilt();
+        tmpMap.mapTypeId = map.getMapTypeId();
+        tmpMap.center = { lat: map.getCenter().lat(), lng: map.getCenter().lng() };
+        tmpMap.overlays = new Array();
+
+        for( var i=0; i < mapOverlays.length; i++ ){
+            if( mapOverlays[i].getMap() == null ){
+                continue;
+            }
+            tmpOverlay = new Object;
+            tmpOverlay.type = mapOverlays[i].type;
+            tmpOverlay.title = mapOverlays[i].title;
+            tmpOverlay.content = mapOverlays[i].content;
+
+            if( mapOverlays[i].fillColor ){
+                tmpOverlay.fillColor = mapOverlays[i].fillColor;
+            }
+
+            if( mapOverlays[i].fillOpacity ){
+                tmpOverlay.fillOpacity = mapOverlays[i].fillOpacity;
+            }
+
+            if( mapOverlays[i].strokeColor ){
+                tmpOverlay.strokeColor = mapOverlays[i].strokeColor;
+            }
+
+            if( mapOverlays[i].strokeOpacity ){
+                tmpOverlay.strokeOpacity = mapOverlays[i].strokeOpacity;
+            }
+
+            if( mapOverlays[i].strokeWeight ){
+                tmpOverlay.strokeWeight = mapOverlays[i].strokeWeight;
+            }
+
+            if( mapOverlays[i].icon ){
+                tmpOverlay.icon = mapOverlays[i].icon;
+            }
+
+            if( mapOverlays[i].flat ){
+                tmpOverlay.flat = mapOverlays[i].flat;
+            }
+
+            if( mapOverlays[i].type == "polygon" ){
+                tmpOverlay.paths = new Array();
+                paths = mapOverlays[i].getPaths();
+                for( var j=0; j < paths.length; j++ ){
+                    tmpOverlay.paths[j] = new Array();
+                    for( var k=0; k < paths.getAt(j).length; k++ ){
+                        tmpOverlay.paths[j][k] = { lat: paths.getAt(j).getAt(k).lat().toString() , lng: paths.getAt(j).getAt(k).lng().toString() };
+                    }
+                }
+
+            }else if( mapOverlays[i].type == "polyline" ){
+                tmpOverlay.path = new Array();
+                path = mapOverlays[i].getPath();
+                for( var j=0; j < path.length; j++ ){
+                    tmpOverlay.path[j] = { lat: path.getAt(j).lat().toString() , lng: path.getAt(j).lng().toString() };
+                }
+
+            }else if( mapOverlays[i].type == "circle" ){
+                tmpOverlay.center = { lat: mapOverlays[i].getCenter().lat(), lng: mapOverlays[i].getCenter().lng() };
+                tmpOverlay.radius = mapOverlays[i].radius;
+            }else if( mapOverlays[i].type == "rectangle" ){
+                tmpOverlay.bounds = {  sw: {lat: mapOverlays[i].getBounds().getSouthWest().lat(), lng: mapOverlays[i].getBounds().getSouthWest().lng()},
+                    ne:     {lat: mapOverlays[i].getBounds().getNorthEast().lat(), lng: mapOverlays[i].getBounds().getNorthEast().lng()}
+                };
+            }else if( mapOverlays[i].type == "marker" ){
+                tmpOverlay.position = { lat: mapOverlays[i].getPosition().lat(), lng: mapOverlays[i].getPosition().lng() };
+            }
+            tmpMap.overlays.push( tmpOverlay );
+        }
+
+        return tmpMap;
+
+    }
+
+    </script>
+</body>
+    
+</html>
