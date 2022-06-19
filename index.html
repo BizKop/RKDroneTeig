@@ -69,7 +69,8 @@
     <select id="pattern-select">
         <option value="">--Please choose a search pattern--</option>
         <option value="rectangel">Rectangel</option>
-        <option value="spiral">Archimedes Spiral</option>
+        <option value="archspiral">Archimedes Spiral</option>
+        <option value="squarespiral">Square Spiral</option>
     </select>
 
     <script async
@@ -81,7 +82,7 @@
 
     <script>
         var map;
-        var mapOverlays = new Array();
+        var mapOverlays = [];
         var drawingManager;
         var flightPath;
         var centerLat;
@@ -89,8 +90,6 @@
         var selectedPattern = "";
 
         function initMap() {
-            // centerLat = document.querySelector('latitude').value;
-            // centerLng = document.querySelector('longitude').value;
             centerLat = Number(document.getElementById("latitude").value);
             centerLng = Number(document.getElementById("longitude").value);
             const centerLoc = { lat: centerLat, lng: centerLng };
@@ -99,7 +98,6 @@
                 zoom: 18,
                 // mapTypeId: "satellite",
                 mapTypeId: "hybrid",
-                //    q: {lat: centerLat, lng: centerLng},
             });
 
             // The marker, positioned at Center location
@@ -119,8 +117,11 @@
                     case "rectangel":
                         CreateFlightPathSquare(centerLat, centerLng, 100, 300);
                         break;
-                    case "spiral":
+                    case "archspiral":
                         CreateFlightPathArchimedesSpiral(centerLat, centerLng, 100, 300);
+                        break;
+                    case "squarespiral":
+                        CreateFlightPathSquareSpiral(centerLat, centerLng, 10, 10);
                         break;
                     default:
                         break;
@@ -130,9 +131,6 @@
         }
 
         function CreateFlightPathSquare(teigCenterLat, teigCenterLng, teigWidth, teigHeight) {
-
-            // Remove earlier flightpaths
-            cleanMapForFlightRoutes();
 
             // Find the corners of the rectangle based on width / height
             teigLowerLeftLat = CreateOffsetLatitude(teigCenterLat, -(teigWidth / 2));
@@ -145,7 +143,7 @@
             teigUpperRightLng = CreateOffsetLongtitude(teigCenterLng, (teigHeight / 2));
 
             // Create array with all coordinates in rectangle
-            const flightPlanCoordinates = [
+            const points = [
                 { lat: teigLowerLeftLat, lng: teigLowerLeftLng },
                 { lat: teigUpperLeftLat, lng: teigUpperLeftLng },
                 { lat: teigUpperRightLat, lng: teigUpperRightLng },
@@ -153,46 +151,10 @@
                 { lat: teigLowerLeftLat, lng: teigLowerLeftLng },
             ];
 
-            // Set the icon to see the direction of the flightpath
-            iconSequence = {
-                icon:
-                {
-                    path: google.maps.SymbolPath.FORWARD_OPEN_ARROW
-                },
-                repeat: '20%'
-            }
-
-            // Create the polyline with all coordinates
-            flightPath = new google.maps.Polyline({
-                path: flightPlanCoordinates,
-                geodesic: true,
-                strokeColor: "#C4FF00",
-                strokeOpacity: 1.0,
-                strokeWeight: 4,
-                draggable: true,
-                editable: true,
-                icons: [iconSequence],
-            });
-
-            // Add the flightpath to the map
-            flightPath.setMap(map);
-            flightPath.type = "polyline";
-            
-            // Add the flightPath to the list of overlays for KML Export
-            mapOverlays.push(flightPath);
-
-            // Add all listeners needed to enable moving and drawing new coords in the flightPath
-            google.maps.event.addListener(flightPath, 'dragend', getPolygonCoords);
-            google.maps.event.addListener(flightPath.getPath(), 'insert_at', getPolygonCoords);
-            google.maps.event.addListener(flightPath.getPath(), 'remove_at', getPolygonCoords);
-            google.maps.event.addListener(flightPath.getPath(), 'set_at', getPolygonCoords);
-
+            setPolylineInMap(points)
         }
 
-         function CreateFlightPathArchimedesSpiral(teigCenterLat, teigCenterLng, teigWidth, teigHeight) {
-
-            // Remove earlier flightpaths
-            cleanMapForFlightRoutes();
+        function CreateFlightPathArchimedesSpiral(teigCenterLat, teigCenterLng, teigWidth, teigHeight) {
 
             let a = 10, b = 5, angle = 0;
             let x = 0, y = 0;
@@ -219,7 +181,46 @@
                 i++;
             }
 
+            setPolylineInMap(points);
+        }
 
+        function CreateFlightPathSquareSpiral(teigCenterLat, teigCenterLng, teigWidth, teigHeight) {
+
+            const points = [];
+
+            let x = 0, y = 0, dx = 0, dy = -1;
+            var t = Math.max(teigWidth, teigHeight);
+            var maxI = teigWidth * t;
+            lastPointLat = teigCenterLat;
+            lastPointLng = teigCenterLng;
+
+
+            for (i = 0; i < maxI; i++) {
+                if ((-teigWidth / 2 <= x) && (x <= teigWidth / 2) && (-teigHeight / 2 <= y) && (y <= teigHeight / 2)) {
+                    lastPointLat = CreateOffsetLatitude(lastPointLat, x)
+                    lastPointLng = CreateOffsetLongtitude(lastPointLng, y)
+                                console.log(lastPointLat.toString(),', ',lastPointLng.toString());
+
+                    points.push({ lat: lastPointLat, lng: lastPointLng });
+                }
+
+                if ((x == y) || ((x < 0) && (x == -y)) || ((x > 0) && (x == 1 - y))) {
+                    t = dx; dx = -dy; dy = t;
+                }
+                x += dx; y += dy;
+            }
+
+            setPolylineInMap(points);
+        }
+
+
+
+        function setPolylineInMap(points) {
+
+            // Remove earlier flightpaths
+            cleanMapForFlightRoutes();
+
+            // Set the icon to see the direction of the flightpath
             iconSequence = {
                 icon:
                 {
@@ -228,6 +229,7 @@
                 repeat: '20%'
             }
 
+            // Create the polyline with all coordinates
             flightPath = new google.maps.Polyline({
                 path: points,
                 geodesic: true,
@@ -239,9 +241,14 @@
                 icons: [iconSequence],
             });
 
+            // Add the flightpath to the map
             flightPath.setMap(map);
             flightPath.type = "polyline";
+
+            // Add the flightPath to the list of overlays for KML Export
             mapOverlays.push(flightPath);
+
+            // Add all listeners needed to enable moving and drawing new coords in the flightPath
             google.maps.event.addListener(flightPath, 'dragend', getPolygonCoords);
             google.maps.event.addListener(flightPath.getPath(), 'insert_at', getPolygonCoords);
             google.maps.event.addListener(flightPath.getPath(), 'remove_at', getPolygonCoords);
@@ -249,12 +256,13 @@
 
         }
 
+        //
         function cleanMapForFlightRoutes() {
             for (i = 0; i < mapOverlays.length; i++) {
-                mapOverlays[i].setMap(null); //or line[i].setVisible(false);
+                mapOverlays[i].setMap(null);
             }
             mapOverlays = [];
-        }        
+        }
 
         function getPolygonCoords() {
             var geoArray = flightPath.getPath();
@@ -518,7 +526,7 @@
             return tmpMap;
         }
 
-        
+
         function formatDate(date, format) {
             const map = {
                 mm: ("0" + (date.getMonth() + 1)).slice(-2),
