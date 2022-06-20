@@ -316,7 +316,7 @@
 
             // Set default altitude to 50m if not set by user
             if (isNaN(flightAltitude)) {
-                flightAltitude = 50;
+                flightAltitude = 0;
             } else {
                 if (flightAltitude < 0 || flightAltitude > 120) {
                     flightAltitude = 50;
