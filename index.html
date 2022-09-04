@@ -39,7 +39,7 @@
             border-color: rgba(255, 255, 255, 1);
         }
 
-        a.button4:disabled {
+        a.button4:disabled,button4[disabled] {
             background-color: #cccccc;
             color: #666666;
         }
@@ -91,6 +91,7 @@
     <script>
         var map;
         var mapOverlays = [];
+        var takeOffMarker;
         var drawingManager;
         var flightPath;
         var flightPathElevations;
@@ -107,6 +108,7 @@
             const downloadButton = document.querySelector('downloadButton');
             const disableButton = () => {
                 downloadButton.disabled = true;
+                downloadButton.style = diabled;
             };
 
             takeOffLat = Number(document.getElementById("latitude").value);
@@ -125,12 +127,15 @@
             const Helipad_image = "https://cdn-icons-png.flaticon.com/32/1595/1595205.png";
 
             // The marker, positioned at TakeOff center location
-            const marker = new google.maps.Marker({
+            takeOffMarker = new google.maps.Marker({
                 position: takeOffLoc,
                 map: map,
                 icon: Helipad_image,
                 draggable: true,
             });
+
+            // Add all listeners needed to enable moving and drawing new coords in the flightPath
+            google.maps.event.addListener(takeOffMarker, 'dragend', changeTakeOffLocation);
             
             function LogMessage(sometext)
             {
@@ -164,6 +169,17 @@
                 }
 
             });
+        }
+
+        function changeTakeOffLocation() {
+            takeOffLng = takeOffMarker.getPosition().lng();
+            takeOffLat = takeOffMarker.getPosition().lat();
+
+            console.log("Changed location of TakeOff to Lng: " + takeOffLng + " Lat: " + takeOffLat);
+
+            document.getElementById("latitude").value = takeOffLat;
+            document.getElementById("longitude").value = takeOffLng;
+
         }
 
         async function getLocationElevation(location) {
