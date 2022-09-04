@@ -39,6 +39,11 @@
             border-color: rgba(255, 255, 255, 1);
         }
 
+        a.button4:disabled {
+            background-color: #cccccc;
+            color: #666666;
+        }
+
         @media all and (max-width:30em) {
             a.button4 {
                 display: block;
@@ -50,7 +55,8 @@
 </head>
 
 <body>
-    <a href="javascript:toKML();" class="button4" style="background-color:#f14e4e">Generate & Download KML</a>
+    <a href="javascript:mapToObject();" class="button4" style="background-color:#f14e4e">Generate FlightPath</a>
+    <a href="javascript:toKML();" class="button4" id="downloadButton" style="background-color:#f14e4e">Download KML</a>
 
     <!-- Hjemme hos Hans Erik -->
     <!-- latitude:<input type="text" id="latitude" value="59.824540">
@@ -64,14 +70,16 @@
     latitude:<input type="text" id="latitude" value="59.93609640271338">
     longitude:<input type="text" id="longitude" value="10.522853115520695">
 
-    <a href="javascript:initMap();" class="button4" style="background-color:#4e9af1">Move center to geolocation</a>
+    <a href="javascript:initMap();" class="button4" style="background-color:#4e9af1">TakeOff center to geolocation</a>
 
     <select id="pattern-select">
         <option value="">--Please choose a search pattern--</option>
         <option value="rectangel">Rectangel</option>
         <option value="archspiral">Archimedes Spiral</option>
-        <option value="squarespiral">Square Spiral</option>
+        <!-- <option value="squarespiral">Square Spiral</option> -->
     </select>
+
+    Flight altitude (m):<input type="text" id="flightAltitude" value="50">
 
     <script async
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBJsSfRxk6h_MBkD7XF7F4IMHh4G_q8Fj4&libraries=drawing,geometry&callback=initMap">
@@ -85,26 +93,54 @@
         var mapOverlays = [];
         var drawingManager;
         var flightPath;
-        var centerLat;
-        var centerLng;
+        var flightPathElevations;
+        var setflightAltitude;
+        var takeOffLat;
+        var takeOffLng;
+        var takeOffElevation;
         var selectedPattern = "";
+        var flightMissionName;
+        var kml;
 
         function initMap() {
-            centerLat = Number(document.getElementById("latitude").value);
-            centerLng = Number(document.getElementById("longitude").value);
-            const centerLoc = { lat: centerLat, lng: centerLng };
+
+            const downloadButton = document.querySelector('downloadButton');
+            const disableButton = () => {
+                downloadButton.disabled = true;
+            };
+
+            takeOffLat = Number(document.getElementById("latitude").value);
+            takeOffLng = Number(document.getElementById("longitude").value);
+            setflightAltitude = parseInt(document.getElementById("flightAltitude").value);
+            console.log("FlightAltitude: " + setflightAltitude);
+
+            const takeOffLoc = { lat: takeOffLat, lng: takeOffLng };
             map = new google.maps.Map(document.getElementById('map'), {
-                center: centerLoc,
+                center: takeOffLoc,
                 zoom: 18,
                 // mapTypeId: "satellite",
                 mapTypeId: "hybrid",
             });
 
-            // The marker, positioned at Center location
+            const Helipad_image = "https://cdn-icons-png.flaticon.com/32/1595/1595205.png";
+
+            // The marker, positioned at TakeOff center location
             const marker = new google.maps.Marker({
-                position: centerLoc,
+                position: takeOffLoc,
                 map: map,
+                icon: Helipad_image,
+                draggable: true,
             });
+            
+            function LogMessage(sometext)
+            {
+                console.log(sometext);
+            }
+
+            getLocationElevation(takeOffLoc).then(
+                function(value) {takeOffElevation = value;},
+                function(error) {LogMessage(error);}
+            );
 
             drawingManager = new google.maps.drawing.DrawingManager();
             drawingManager.setMap(map);
@@ -115,13 +151,13 @@
                 console.log("Changing pattern to: ", event.target.value); // 👉️ get selected VALUE
                 switch (selectedPattern) {
                     case "rectangel":
-                        CreateFlightPathSquare(centerLat, centerLng, 100, 300);
+                        CreateFlightPathSquare(takeOffLat, takeOffLng, 100, 300);
                         break;
                     case "archspiral":
-                        CreateFlightPathArchimedesSpiral(centerLat, centerLng, 100, 300);
+                        CreateFlightPathArchimedesSpiral(takeOffLat, takeOffLng, 100, 300);
                         break;
                     case "squarespiral":
-                        CreateFlightPathSquareSpiral(centerLat, centerLng, 10, 10);
+                        CreateFlightPathSquareSpiral(takeOffLat, takeOffLng, 10, 10);
                         break;
                     default:
                         break;
@@ -129,6 +165,47 @@
 
             });
         }
+
+        async function getLocationElevation(location) {
+            // Initiate the location request
+            console.log("Finding Height Above Ground Level");
+            const elevator = new google.maps.ElevationService();
+            await elevator.getElevationForLocations({
+                locations: [location],
+            })
+                .then(({ results }) => {
+                    // Retrieve the first result
+                    if (results[0]) {
+                        takeOffElevation = results[0].elevation;
+                        console.log("The TakeOff elevation is " + takeOffElevation + " meters.");
+                    } else {
+                        console.log("No TakeOff elevation results found");
+                    }
+                })
+                .catch((e) =>
+                    console.log("Elevation service failed due to: " + e)
+                );
+                return takeOffElevation;
+            }
+
+        function getFlightPathElevations(flightPathLocations) {
+            // Initiate the location request
+            console.log("Finding Height Above Ground Level for all points in flightPath");
+            const elevator = new google.maps.ElevationService();
+            elevator.getElevationForLocations({
+                locations: flightPathLocations, 
+            })
+                .then(({ results }) => {
+                    flightPathElevations = results;
+                    console.log("Elevation service have calculated height for all points")
+                    flightPathElevations.forEach(element => {
+                        console.log(element);
+                    }); 
+                })
+                .catch((e) =>
+                    console.log("Elevation service failed due to: " + e)
+                );
+        }        
 
         function CreateFlightPathSquare(teigCenterLat, teigCenterLng, teigWidth, teigHeight) {
 
@@ -248,6 +325,10 @@
             // Add the flightPath to the list of overlays for KML Export
             mapOverlays.push(flightPath);
 
+//            getFlightPathElevations(points);
+//            getFlightPathElevations(flightPath.getPath().Array());
+
+
             // Add all listeners needed to enable moving and drawing new coords in the flightPath
             google.maps.event.addListener(flightPath, 'dragend', getPolygonCoords);
             google.maps.event.addListener(flightPath.getPath(), 'insert_at', getPolygonCoords);
@@ -296,9 +377,12 @@
             return parseFloat(orgLongtitude + dLon * 180 / Pi);
         }
 
-        function download(filename, text) {
+        function download() {
+            // Start file download.
+            var filename = flightMissionName + ".kml";
+
             var element = document.createElement('a');
-            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(kml));
             element.setAttribute('download', filename);
 
             element.style.display = 'none';
@@ -310,21 +394,24 @@
         }
 
 
-        function toKML(flightAltitude) {
-            var result = mapToObject();
+        function toKML() {
             var xw = new XMLWriter('UTF-8');
-
+            var flightAltitude = setflightAltitude;
+            console.log("FlightAltitude: " + setflightAltitude);
             // Set default altitude to 50m if not set by user
             if (isNaN(flightAltitude)) {
-                flightAltitude = 0;
+                flightAltitude = 50;
             } else {
+                // Override illegal options
                 if (flightAltitude < 0 || flightAltitude > 120) {
                     flightAltitude = 50;
                 }
             }
 
+            var calculatedFlightAltitude;
+
             const today = new Date();
-            var flightMissionName = "FlightMission-" + formatDate(today, 'ddmmyyyy-hhmi');
+            flightMissionName = "FlightMission-" + formatDate(today, 'ddmmyyyy-hhmi');
             var flightMissionLength = " - Length: " + google.maps.geometry.spherical.computeLength(flightPath.getPath()) + " meters";
 
             xw.formatting = 'indented';//add indentation and newlines
@@ -336,40 +423,41 @@
             xw.writeAttributeString("xmlns", "http://www.opengis.net/kml/2.2");
             xw.writeStartElement('Document');
 
-            for (var i = 0; i < result.overlays.length; i++) {
+            for (var i = 0; i < kmlObject.overlays.length; i++) {
                 xw.writeStartElement('Placemark');
                 xw.writeStartElement('name');
-                xw.writeCDATA(flightMissionName);//result.overlays[i].title );
+                xw.writeCDATA(flightMissionName);
                 xw.writeEndElement();
                 xw.writeStartElement('description');
-                xw.writeCDATA("Teig flightpath for " + flightMissionName + flightMissionLength + " - Flying at " + flightAltitude + " meters");
+                xw.writeCDATA("Teig flightpath for " + flightMissionName + flightMissionLength + " - Flying at " + flightAltitude + " meters" + 
+                " - Taking of from " + parseInt(takeOffElevation) + " meters above sea level");
                 xw.writeEndElement();
-                if (result.overlays[i].type == "marker") {
-
+                console.log("Overlay " + i + " is a " + kmlObject.overlays[i].type);
+                if (kmlObject.overlays[i].type == "marker") {
                     xw.writeStartElement('Point');
                     xw.writeElementString('extrude', '1');
                     xw.writeElementString('altitudeMode', 'relativeToGround');
-                    xw.writeElementString('coordinates', result.overlays[i].position.lng.toString() + "," + result.overlays[i].position.lat.toString() + "," + flightAltitude);
+                    xw.writeElementString('coordinates', kmlObject.overlays[i].position.lng.toString() + "," + kmlObject.overlays[i].position.lat.toString() + "," + flightAltitude);
                     xw.writeEndElement();
 
-                } else if (result.overlays[i].type == "polygon" || result.overlays[i].type == "rectangle" || result.overlays[i].type == "circle") {
+                } else if (kmlObject.overlays[i].type == "polygon" || kmlObject.overlays[i].type == "rectangle" || kmlObject.overlays[i].type == "circle") {
                     xw.writeStartElement('Polygon');
                     xw.writeElementString('extrude', '1');
                     xw.writeElementString('altitudeMode', 'relativeToGround');
 
-                    if (result.overlays[i].type == "rectangle") {
+                    if (kmlObject.overlays[i].type == "rectangle") {
                         //its a polygon
                         xw.writeStartElement('outerBoundaryIs');
                         xw.writeStartElement('LinearRing');
                         xw.writeStartElement("coordinates");
-                        xw.writeString(result.overlays[i].bounds.sw.lng + "," + result.overlays[i].bounds.sw.lat + "," + flightAltitude);
-                        xw.writeString(result.overlays[i].bounds.ne.lng + "," + result.overlays[i].bounds.sw.lat + "," + flightAltitude);
-                        xw.writeString(result.overlays[i].bounds.ne.lng + "," + result.overlays[i].bounds.ne.lat + "," + flightAltitude);
-                        xw.writeString(result.overlays[i].bounds.sw.lng + "," + result.overlays[i].bounds.ne.lat + "," + flightAltitude);
+                        xw.writeString(kmlObject.overlays[i].bounds.sw.lng + "," + kmlObject.overlays[i].bounds.sw.lat + "," + flightAltitude);
+                        xw.writeString(kmlObject.overlays[i].bounds.ne.lng + "," + kmlObject.overlays[i].bounds.sw.lat + "," + flightAltitude);
+                        xw.writeString(kmlObject.overlays[i].bounds.ne.lng + "," + kmlObject.overlays[i].bounds.ne.lat + "," + flightAltitude);
+                        xw.writeString(kmlObject.overlays[i].bounds.sw.lng + "," + kmlObject.overlays[i].bounds.ne.lat + "," + flightAltitude);
                         xw.writeEndElement();
                         xw.writeEndElement();
                         xw.writeEndElement();
-                    } else if (result.overlays[i].type == "circle") {
+                    } else if (kmlObject.overlays[i].type == "circle") {
                         //its a polygon, approximate a circle by a circular 64 sided polygon.
                         xw.writeStartElement('outerBoundaryIs');
                         xw.writeStartElement('LinearRing');
@@ -382,23 +470,23 @@
                         var points = 64;
 
                         // find the raidus in lat/lon
-                        var rlat = (result.overlays[i].radius / earthsradius) * r2d;
-                        var rlng = rlat / Math.cos(result.overlays[i].center.lat * d2r);
+                        var rlat = (kmlObject.overlays[i].radius / earthsradius) * r2d;
+                        var rlng = rlat / Math.cos(kmlObject.overlays[i].center.lat * d2r);
 
                         var extp = new Array();
                         if (dir == 1) { var start = 0; var end = points + 1 } // one extra here makes sure we connect the line
                         else { var start = points + 1; var end = 0 }
                         for (var j = start; (dir == 1 ? j < end : j > end); j = j + dir) {
                             var theta = Math.PI * (j / (points / 2));
-                            ey = result.overlays[i].center.lng + (rlng * Math.cos(theta)); // center a + radius x * cos(theta)
-                            ex = result.overlays[i].center.lat + (rlat * Math.sin(theta)); // center b + radius y * sin(theta)
+                            ey = kmlObject.overlays[i].center.lng + (rlng * Math.cos(theta)); // center a + radius x * cos(theta)
+                            ex = kmlObject.overlays[i].center.lat + (rlat * Math.sin(theta)); // center b + radius y * sin(theta)
                             xw.writeString(ey + "," + ex + "," + flightAltitude);
                         }
                         xw.writeEndElement();
                         xw.writeEndElement();
                         xw.writeEndElement();
                     } else {
-                        for (var j = 0; j < result.overlays[i].paths.length; j++) {
+                        for (var j = 0; j < kmlObject.overlays[i].paths.length; j++) {
                             if (j == 0) {
                                 xw.writeStartElement('outerBoundaryIs');
                             } else {
@@ -406,8 +494,8 @@
                             }
                             xw.writeStartElement('LinearRing');
                             xw.writeStartElement("coordinates");
-                            for (var k = 0; k < result.overlays[i].paths[j].length; k++) {
-                                xw.writeString(result.overlays[i].paths[j][k].lng + "," + result.overlays[i].paths[j][k].lat + "," + flightAltitude);
+                            for (var k = 0; k < kmlObject.overlays[i].paths[j].length; k++) {
+                                xw.writeString(kmlObject.overlays[i].paths[j][k].lng + "," + kmlObject.overlays[i].paths[j][k].lat + "," + flightAltitude);
                             }
                             xw.writeEndElement();
                             xw.writeEndElement();
@@ -416,13 +504,25 @@
                     }
                     xw.writeEndElement();
 
-                } else if (result.overlays[i].type == "polyline") {
+                } else if (kmlObject.overlays[i].type == "polyline") {
                     xw.writeStartElement('LineString');
                     xw.writeElementString('extrude', '1');
                     xw.writeElementString('altitudeMode', 'relativeToGround');
                     xw.writeStartElement("coordinates");
-                    for (var j = 0; j < result.overlays[i].path.length; j++) {
-                        xw.writeString(result.overlays[i].path[j].lng + "," + result.overlays[i].path[j].lat + "," + flightAltitude);
+                    calculatedFlightAltitude = flightAltitude;
+                    for (var j = 0; j < kmlObject.overlays[i].path.length; j++) {
+                        // Calcualte the correct altitude with elevation from waypoint
+                        var flightPointElevation = flightPathElevations[j];
+                        var diffElevation = parseInt(flightPointElevation.elevation - takeOffElevation);
+
+                        console.log("Elevation : " + flightPointElevation + " diff is " + diffElevation);
+
+                        // check diff, if more than 2 meters we adjust the drone height
+                        if (diffElevation > 2) {
+                            calculatedFlightAltitude = diffElevation + flightAltitude;
+                        } 
+
+                        xw.writeString(kmlObject.overlays[i].path[j].lng + "," + kmlObject.overlays[i].path[j].lat + "," + calculatedFlightAltitude);
                     }
                     xw.writeEndElement();
                     xw.writeEndElement();
@@ -439,11 +539,13 @@
             var xml = xw.flush(); //generate the xml string
             xw.close();//clean the writer
             xw = undefined;//don't let visitors use it, it's closed
-            //set the xml
+            
+            //set the xml to kml
+            kml = xml;
             document.getElementById('kmlString').value = xml;
 
             // Start file download.
-            download(flightMissionName + ".kml", xml);
+            download();
         }
 
         function mapToObject() {
@@ -503,11 +605,15 @@
                     }
 
                 } else if (mapOverlays[i].type == "polyline") {
-                    tmpOverlay.path = new Array();
+                    const points = [];
+                    tmpOverlay.path = points;
                     path = mapOverlays[i].getPath();
                     for (var j = 0; j < path.length; j++) {
-                        tmpOverlay.path[j] = { lat: path.getAt(j).lat().toString(), lng: path.getAt(j).lng().toString() };
+                        var loc = { lat: path.getAt(j).lat(), lng: path.getAt(j).lng() };
+                        tmpOverlay.path[j] = loc;
+                        points.push(loc);
                     }
+                    getFlightPathElevations(points);
 
                 } else if (mapOverlays[i].type == "circle") {
                     tmpOverlay.center = { lat: mapOverlays[i].getCenter().lat(), lng: mapOverlays[i].getCenter().lng() };
@@ -522,8 +628,13 @@
                 }
                 tmpMap.overlays.push(tmpOverlay);
             }
+            kmlObject = tmpMap;
+            setflightAltitude = parseInt(document.getElementById("flightAltitude").value);
+            const downloadButton = document.querySelector('downloadButton');
 
-            return tmpMap;
+            const disableButton = () => {
+                downloadButton.disabled = false;
+            };
         }
 
 
