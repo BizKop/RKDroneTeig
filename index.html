@@ -638,7 +638,7 @@
 
                 } else if (mapOverlays[i].type == "polyline") {
                     const points = [];
-                    tmpOverlay.path = points;
+                    tmpOverlay.paths = new Array();
                     path = mapOverlays[i].getPath();
                     for (var j = 0; j < path.length; j++) {
                         var loc = { lat: path.getAt(j).lat(), lng: path.getAt(j).lng() };
