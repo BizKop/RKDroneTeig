@@ -643,7 +643,8 @@
                     path = mapOverlays[i].getPath();
                     for (var j = 0; j < path.length; j++) {
                         var loc = { lat: path.getAt(j).lat(), lng: path.getAt(j).lng() };
-                        tmpOverlay.path[j] = loc;
+                        //tmpOverlay.path[j] = loc;
+                        tmpOverlay.path.push(loc);
                         points.push(loc);
                     }
                     getFlightPathElevations(points);
