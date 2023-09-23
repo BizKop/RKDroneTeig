@@ -277,6 +277,7 @@
 			teigCenterLng = CreateOffsetLongtitude(teigCenterLng, teigOffset);
 
 			const points = [];
+			distance = patternWidth;
 			
 			//Add the center
             points.push({ lat: teigCenterLat, lng: teigCenterLng });
@@ -292,7 +293,7 @@
 			let intialAngle = 0, angle=0, moveAngle = 120;
             let i = 1, x = 0, y = 0;
 			
-			while (i <= 2)
+			while (i <= 6)
 			{
 				angle = intialAngle + i * moveAngle;
 				
@@ -302,8 +303,17 @@
 //				lastPointLat = CreateOffsetLatitude(lastPointLat, 2* x);
 //				lastPointLng = CreateOffsetLongtitude(lastPointLng, 2 * y);
 				
-				lastPointLat = movePointLat(lastPointLat,lastPointLng,patternWidth,angle);
-				lastPointLng = movePointLon(lastPointLat,lastPointLng,patternWidth,angle);
+				//check if the number is even
+				if(number % 2 == 0) {
+					distance = patternWidth * 2;
+				}
+				else
+				{
+					distance = patternWidth;
+				}
+				
+				lastPointLat = movePointLat(lastPointLat,lastPointLng,distance,angle);
+				lastPointLng = movePointLon(lastPointLat,lastPointLng,distance,angle);
 				
 
 //				points.push(movePoint(lastPointLat,lastPointLng, patternWidth, moveAngle));
