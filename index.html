@@ -340,7 +340,7 @@
 
             setPolylineInMap(points)
         }	
-		function degrees_to_radians(degrees)
+		function toRadians(degrees)
 		{
 		  return degrees * (Math.PI/180);
 		}	
@@ -369,9 +369,9 @@
 		}
 		
 		function movePoint(latitude, longitude, distanceInMetres, bearing) {
-			brngRad = Math.toRadians(bearing);
-			latRad = Math.toRadians(latitude);
-			lonRad = Math.toRadians(longitude);
+			brngRad = toRadians(bearing);
+			latRad = toRadians(latitude);
+			lonRad = toRadians(longitude);
 			earthRadiusInMetres = 6371000;
 			distFrac = distanceInMetres / earthRadiusInMetres;
 
