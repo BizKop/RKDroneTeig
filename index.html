@@ -385,7 +385,7 @@
 			longitudeResult = (lonRad + a + 3 * Math.PI) % (2 * Math.PI) - Math.PI;
 
 			console.log("lat: " + toDegrees(latitudeResult) + ", lon: " + toDegrees(longitudeResult));
-			return { lat: latitudeResult, lng: longitudeResult };
+			return { lat: toDegrees(latitudeResult), lng: toDegrees(longitudeResult) };
 
 		}
 
