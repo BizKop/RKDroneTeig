@@ -295,13 +295,14 @@
 			{
 				angle = intialAngle + i * moveAngle;
 				
-				x = patternWidth * Math.sin(degrees_to_radians(angle));
-				y = patternWidth * Math.cos(degrees_to_radians(angle));		
+//				x = patternWidth * Math.sin(degrees_to_radians(angle));
+//				y = patternWidth * Math.cos(degrees_to_radians(angle));		
 				
-				lastPointLat = CreateOffsetLatitude(lastPointLat, 2* x);
-				lastPointLng = CreateOffsetLongtitude(lastPointLng, 2 * y);
+//				lastPointLat = CreateOffsetLatitude(lastPointLat, 2* x);
+//				lastPointLng = CreateOffsetLongtitude(lastPointLng, 2 * y);
 				
-				points.push({ lat: lastPointLat, lng: lastPointLng });
+				points.push(destinationPoint(patternWidth, moveAngle));
+//				points.push({ lat: lastPointLat, lng: lastPointLng });
 				i++;
 			}
 			
@@ -341,7 +342,45 @@
 		function degrees_to_radians(degrees)
 		{
 		  return degrees * (Math.PI/180);
-		}		
+		}	
+
+    /**
+     * Returns the destination point from ‘this’ point having travelled the given distance on the
+     * given initial bearing (bearing normally varies around path followed).
+     *
+     * @param   {number} distance - Distance travelled, in same units as earth radius (default: metres).
+     * @param   {number} bearing - Initial bearing in degrees from north.
+     * @param   {number} [radius=6371e3] - (Mean) radius of earth (defaults to radius in metres).
+     * @returns {LatLon} Destination point.
+     *
+     * @example
+     *   const p1 = new LatLon(51.47788, -0.00147);
+     *   const p2 = p1.destinationPoint(7794, 300.7); // 51.5136°N, 000.0983°W
+     */
+    function destinationPoint(distance, bearing) {
+        // sinφ2 = sinφ1⋅cosδ + cosφ1⋅sinδ⋅cosθ
+        // tanΔλ = sinθ⋅sinδ⋅cosφ1 / cosδ−sinφ1⋅sinφ2
+        // see mathforum.org/library/drmath/view/52049.html for derivation
+			<!-- R = 6378137 -->
+            <!-- Pi = 3.14159; -->
+		const radius = 6371e3;
+        const δ = distance / radius; // angular distance in radians
+        const θ = Number(bearing).toRadians();
+
+        const φ1 = this.lat.toRadians(), λ1 = this.lon.toRadians();
+
+        const sinφ2 = Math.sin(φ1) * Math.cos(δ) + Math.cos(φ1) * Math.sin(δ) * Math.cos(θ);
+        const φ2 = Math.asin(sinφ2);
+        const y = Math.sin(θ) * Math.sin(δ) * Math.cos(φ1);
+        const x = Math.cos(δ) - Math.sin(φ1) * sinφ2;
+        const λ2 = λ1 + Math.atan2(y, x);
+
+        const lat = φ2.toDegrees();
+        const lon = λ2.toDegrees();
+
+        return { lat: lat, lng: lon };
+    }
+	
 
         function CreateFlightPathArchimedesSpiral(teigCenterLat, teigCenterLng, teigWidth, teigHeight) {
 
