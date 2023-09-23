@@ -184,7 +184,8 @@
                 console.log("Changing pattern to: ", event.target.value); // 👉️ get selected VALUE
                 switch (selectedPattern) {
                     case "rectangel":
-                        CreateFlightPathSquare(takeOffLat, takeOffLng, teigWidth, teigHeight);
+						CreateFlightPathRectangleNew(takeOffLat, takeOffLng, teigWidth, teigHeight);
+                        //CreateFlightPathSquare(takeOffLat, takeOffLng, teigWidth, teigHeight);
                         break;
                     case "archspiral":
                         CreateFlightPathArchimedesSpiral(takeOffLat, takeOffLng, teigWidth, teigHeight);
@@ -279,6 +280,56 @@
             setPolylineInMap(points)
         }
 		
+		
+        function CreateFlightPathRectangleNew(teigCenterLat, teigCenterLng, patternWidth, patternHeight) {
+
+			// Find the center of the search pattern
+			teigCenterLat = CreateOffsetLatitude(teigCenterLat, patternHeight);
+			teigCenterLng = CreateOffsetLongtitude(teigCenterLng, patternHeight);
+
+			lastPointLat = movePointLat(teigCenterLat,teigCenterLng,patternWidth,0);
+			lastPointLng = movePointLon(teigCenterLat,teigCenterLng,patternWidth,0);
+
+			const points = [];
+			distance = patternWidth;
+			
+			//Add the lower left corner
+            points.push({ lat: lastPointLat, lng: lastPointLng });
+			
+			// Fly teigWidth in northbound direction and add to pattern
+			lastPointLat = movePointLat(teigCenterLat,teigCenterLng,patternHeight,0);
+			lastPointLng = movePointLon(teigCenterLat,teigCenterLng,patternHeight,0);
+            points.push({ lat: lastPointLat, lng: lastPointLng });
+			
+			// Add 90 degrees clockwise and move teightWidth or teigHeight
+			let intialAngle = 0, angle=0, moveAngle = 90;
+            let i = 1;
+			
+			while (i <= 4)
+			{
+				angle = intialAngle + i * moveAngle;
+				
+				
+				//check if leg is 2 or 4 (height)
+				if(i == 2 || i == 4) {
+					distance = patternWidth;
+				}
+				else
+				{
+					distance = patternHeight;
+				}
+				
+				lastPointLat = movePointLat(lastPointLat,lastPointLng,distance,angle);
+				lastPointLng = movePointLon(lastPointLat,lastPointLng,distance,angle);
+				
+				points.push({ lat: lastPointLat, lng: lastPointLng });
+				i++;
+			}
+		
+            setPolylineInMap(points)
+        }	
+		
+		
         function CreateFlightPathSector(teigCenterLat, teigCenterLng, patternWidth, teigOffset) {
 
 			// Find the center of the search pattern
@@ -292,8 +343,6 @@
             points.push({ lat: teigCenterLat, lng: teigCenterLng });
 			
 			// Fly teigWidth (60m) in northbound direction and add to pattern
-			<!-- lastPointLat = CreateOffsetLatitude(teigCenterLat, patternWidth); -->
-			<!-- lastPointLng = CreateOffsetLongtitude(teigCenterLng, patternWidth); -->
 			lastPointLat = movePointLat(teigCenterLat,teigCenterLng,patternWidth,0);
 			lastPointLng = movePointLon(teigCenterLat,teigCenterLng,patternWidth,0);
             points.push({ lat: lastPointLat, lng: lastPointLng });
@@ -306,15 +355,9 @@
 			{
 				angle = intialAngle + i * moveAngle;
 				
-//				x = patternWidth * Math.sin(degrees_to_radians(angle));
-//				y = patternWidth * Math.cos(degrees_to_radians(angle));		
 				
-//				lastPointLat = CreateOffsetLatitude(lastPointLat, 2* x);
-//				lastPointLng = CreateOffsetLongtitude(lastPointLng, 2 * y);
-				
-				//check if the number is even
+				//check if leg is 2 or 4 (double length
 				if(i == 2 || i == 4) {
-//				if(i % 2 == 0) {
 					distance = patternWidth * 2;
 				}
 				else
@@ -325,44 +368,10 @@
 				lastPointLat = movePointLat(lastPointLat,lastPointLng,distance,angle);
 				lastPointLng = movePointLon(lastPointLat,lastPointLng,distance,angle);
 				
-
-//				points.push(movePoint(lastPointLat,lastPointLng, patternWidth, moveAngle));
-//				points.push(destinationPoint(lastPointLat,lastPointLng, patternWidth, moveAngle));
 				points.push({ lat: lastPointLat, lng: lastPointLng });
 				i++;
 			}
-			
-			<!-- angle = angle + 2 * moveangle; -->
-			
-			<!-- x = patternWidth * Math.sin(degrees_to_radians(angle)); -->
-            <!-- y = patternWidth * Math.cos(degrees_to_radians(angle));		 -->
-			
-            <!-- lastPointLat = CreateOffsetLatitude(lastPointLat, 2 * x); -->
-            <!-- lastPointLng = CreateOffsetLongtitude(lastPointLng, 2 * y); -->
-			
-			<!-- points.push({ lat: lastPointLat, lng: lastPointLng }); -->
-
-            
-			//const acceleration = 0.7, circleNum = 1;
-            <!-- lastPointLat = teigCenterLat; -->
-            <!-- lastPointLng = teigCenterLng; -->
-
-            <!-- i = 0 -->
-
-            <!-- //Note that the angle here increases by 2 * math Compare Pi as the benchmark and control how many circles to draw -->
-            <!-- while (angle <= circleNum * 2 * Math.PI) { -->
-
-                <!-- x = (a + b * angle) * Math.sin(angle); -->
-                <!-- y = (a + b * angle) * Math.cos(angle); -->
-                <!-- lastPointLat = CreateOffsetLatitude(lastPointLat, x) -->
-                <!-- lastPointLng = CreateOffsetLongtitude(lastPointLng, y) -->
-                <!-- //            console.log(lastPointLat.toString(),', ',lastPointLng.toString()); -->
-
-                <!-- points.push({ lat: lastPointLat, lng: lastPointLng }); -->
-                <!-- angle = angle + acceleration; -->
-                <!-- i++; -->
-            <!-- } -->
-
+		
             setPolylineInMap(points)
         }	
 		function toRadians(degrees)
@@ -375,29 +384,6 @@
 		  return radians * (180/Math.PI);
 		}
 
-<!-- Let first point latitude be la1, -->
-<!-- longitude as lo1, -->
-<!-- d be distance, -->
-<!-- R as radius of Earth, -->
-<!-- angularDistance be the angular distance i.e d/R and -->
-<!-- Here is the formula to find the second point, when first point, bearing and distance is known: -->
-<!-- https://www.igismap.com/formula-to-find-bearing-or-heading-angle-between-two-points-latitude-longitude/ -->
-<!-- latitude of second point = la2 =  asin(sin la1 * cos angularDistance  + cos la1 * sin angularDistance * cos bearing), and -->
-<!-- longitude  of second point = lo2 = lo1 + atan2(sin bearing * sin Ad * cos la1 , cos Ad – sin la1 * sin la2) -->
- 
-		function destinationPoint(la1, lo1, distance, bearing) {
-			const R = 6378137;
-			const angularDistance = distance / R; // angular distance in radians
-			
-			la2 = la1 + Math.asin(Math.sin(la1) * Math.cos(angularDistance) + Math.cos(la1) * Math.sin(angularDistance) * Math.cos(bearing));
-			y = Math.sin(bearing) * Math.sin(angularDistance) * Math.cos(la1);
-			xTemp = Math.sin(la1) * Math.sin(la2);
-			x = Math.cos(angularDistance);
-			lo2 = lo1 + Math.atan2(y,x-xTemp);
-
-			return { lat: la2, lng: lo2 };
-		}
-		
 		function movePoint(latitude, longitude, distanceInMetres, bearing) {
 			brngRad = toRadians(bearing);
 			latRad = toRadians(latitude);
@@ -569,19 +555,18 @@
             dLat = offsetMeters / R;
 
             //OffsetPosition, decimal degrees
-            return parseFloat(orgLatitude + dLat * 180 / Pi);
+            return parseFloat(orgLatitude + dLat * 180 / Math.PI);
         }
 
         function CreateOffsetLongtitude(orgLongtitude, offsetMeters) {
             //Earth’s radius, sphere
             R = 6378137
-            Pi = 3.14159;
 
             //Coordinate offsets in radians
-            dLon = offsetMeters / (R * Math.cos(Pi * orgLongtitude / 180))
+            dLon = offsetMeters / (R * Math.cos(Math.PI * orgLongtitude / 180))
 
             //OffsetPosition, decimal degrees
-            return parseFloat(orgLongtitude + dLon * 180 / Pi);
+            return parseFloat(orgLongtitude + dLon * 180 / Math.PI);
         }
 
         function download() {
