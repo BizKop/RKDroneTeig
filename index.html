@@ -291,24 +291,24 @@
 			let angle = 90, moveangle = -120;
             let x = 0, y = 0;
 			
-			angle = angle + moveangle;
+			angle = angle + 2 * moveangle;
 			
 			x = patternWidth * Math.sin(degrees_to_radians(angle));
             y = patternWidth * Math.cos(degrees_to_radians(angle));		
 			
-            lastPointLat = CreateOffsetLatitude(lastPointLat, x);
-            lastPointLng = CreateOffsetLongtitude(lastPointLng, y);
+            lastPointLat = CreateOffsetLatitude(lastPointLat, 2* x);
+            lastPointLng = CreateOffsetLongtitude(lastPointLng, 2 * y);
 			
 			points.push({ lat: lastPointLat, lng: lastPointLng });
 			
 			
-			angle = angle + moveangle;
+			angle = angle + 2 * moveangle;
 			
 			x = patternWidth * Math.sin(degrees_to_radians(angle));
             y = patternWidth * Math.cos(degrees_to_radians(angle));		
 			
-            lastPointLat = CreateOffsetLatitude(lastPointLat, x);
-            lastPointLng = CreateOffsetLongtitude(lastPointLng, y);
+            lastPointLat = CreateOffsetLatitude(lastPointLat, 2 * x);
+            lastPointLng = CreateOffsetLongtitude(lastPointLng, 2 * y);
 			
 			points.push({ lat: lastPointLat, lng: lastPointLng });
 
