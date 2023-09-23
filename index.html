@@ -274,55 +274,52 @@
 
 			// Find the center of the search pattern
 			teigCenterLat = CreateOffsetLatitude(teigCenterLat, teigOffset);
-			teigCenterLng = CreateOffsetLongtitude(teigCenterLng, teigOffset);			
-			
-            <!-- // Find the corners of the rectangle based on width / height -->
-            <!-- teigLowerLeftLat = CreateOffsetLatitude(teigCenterLat, -(teigWidth / 2)); -->
-            <!-- teigLowerLeftLng = CreateOffsetLongtitude(teigCenterLng, -(teigHeight / 2)); -->
-            <!-- teigLowerRightLat = CreateOffsetLatitude(teigCenterLat, (teigWidth / 2)); -->
-            <!-- teigLowerRightLng = teigLowerLeftLng; -->
-            <!-- teigUpperLeftLat = teigLowerLeftLat; -->
-            <!-- teigUpperLeftLng = CreateOffsetLongtitude(teigCenterLng, (teigHeight / 2)); -->
-            <!-- teigUpperRightLat = CreateOffsetLatitude(teigCenterLat, (teigWidth / 2)); -->
-            <!-- teigUpperRightLng = CreateOffsetLongtitude(teigCenterLng, (teigHeight / 2)); -->
+			teigCenterLng = CreateOffsetLongtitude(teigCenterLng, teigOffset);
 
-            <!-- // Create array with all coordinates in rectangle -->
-            <!-- const points = [ -->
-                <!-- { lat: teigLowerLeftLat, lng: teigLowerLeftLng }, -->
-                <!-- { lat: teigUpperLeftLat, lng: teigUpperLeftLng }, -->
-                <!-- { lat: teigUpperRightLat, lng: teigUpperRightLng }, -->
-                <!-- { lat: teigLowerRightLat, lng: teigLowerRightLng }, -->
-                <!-- { lat: teigLowerLeftLat, lng: teigLowerLeftLng }, -->
-            <!-- ]; -->
-			
-            let a = 10, b = 5, angle = 0;
-            let x = 0, y = 0;
-			
-			
 			const points = [];
+			
+			//Add the center
+            points.push({ lat: teigCenterLat, lng: teigCenterLng });
+			
+			// Fly teigWidth (60m) in northbound direction and add to pattern
+			lastPointLat = CreateOffsetLatitude(teigCenterLat, teigOffset);
+			lastPointLng = CreateOffsetLongtitude(teigCenterLng, teigOffset);
+            points.push({ lat: lastPointLat, lng: lastPointLng });
+			
+			
+            <!-- let a = 10, b = 5, angle = 0; -->
+            <!-- let x = 0, y = 0; -->
+			
+			
 
-            const acceleration = 0.7, circleNum = 5;
-            lastPointLat = teigCenterLat;
-            lastPointLng = teigCenterLng;
+            <!-- const acceleration = 0.7, circleNum = 1; -->
+            <!-- lastPointLat = teigCenterLat; -->
+            <!-- lastPointLng = teigCenterLng; -->
 
-            i = 0
+            <!-- i = 0 -->
 
-            //Note that the angle here increases by 2 * math Compare Pi as the benchmark and control how many circles to draw
-            while (angle <= circleNum * 2 * Math.PI) {
+            <!-- //Note that the angle here increases by 2 * math Compare Pi as the benchmark and control how many circles to draw -->
+            <!-- while (angle <= circleNum * 2 * Math.PI) { -->
 
-                x = (a + b * angle) * Math.sin(angle);
-                y = (a + b * angle) * Math.cos(angle);
-                lastPointLat = CreateOffsetLatitude(lastPointLat, x)
-                lastPointLng = CreateOffsetLongtitude(lastPointLng, y)
-                //            console.log(lastPointLat.toString(),', ',lastPointLng.toString());
+                <!-- x = (a + b * angle) * Math.sin(angle); -->
+                <!-- y = (a + b * angle) * Math.cos(angle); -->
+                <!-- lastPointLat = CreateOffsetLatitude(lastPointLat, x) -->
+                <!-- lastPointLng = CreateOffsetLongtitude(lastPointLng, y) -->
+                <!-- //            console.log(lastPointLat.toString(),', ',lastPointLng.toString()); -->
 
-                points.push({ lat: lastPointLat, lng: lastPointLng });
-                angle = angle + acceleration;
-                i++;
-            }
+                <!-- points.push({ lat: lastPointLat, lng: lastPointLng }); -->
+                <!-- angle = angle + acceleration; -->
+                <!-- i++; -->
+            <!-- } -->
 
             setPolylineInMap(points)
-        }		
+        }	
+
+		function degrees_to_radians(degrees)
+		{
+		  var pi = Math.PI;
+		  return degrees * (pi/180);
+		}		
 
         function CreateFlightPathArchimedesSpiral(teigCenterLat, teigCenterLng, teigWidth, teigHeight) {
 
