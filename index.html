@@ -288,12 +288,12 @@
 			
 			
 			// Add 120 degrees clockwise and move 60 m
-			let angle = 90, moveangle = -120;
+			let intialAngle = 90, angle=0, moveAngle = -120;
             let i = 1, x = 0, y = 0;
 			
 			while (i <= 2)
 			{
-				angle = angle + i * moveangle;
+				angle = intialAngle + i * moveAngle;
 				
 				x = patternWidth * Math.sin(degrees_to_radians(angle));
 				y = patternWidth * Math.cos(degrees_to_radians(angle));		
