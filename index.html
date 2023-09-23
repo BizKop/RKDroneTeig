@@ -360,7 +360,8 @@
 			
 			la2 =  Math.asin(Math.sin(la1) * Math.cos(angularDistance) + Math.cos(la1) * Math.sin(angularDistance) * Math.cos(bearing));
 			y = Math.sin(bearing) * Math.sin(angularDistance) * Math.cos(la1);
-			x = Math.cos(angularDistance) – (Math.sin(la1) * Math.sin(la2));
+			xTemp = Math.sin(la1) * Math.sin(la2);
+			x = Math.cos(angularDistance) – xTemp;
 			lo2 = lo1 + Math.atan2(y,x);
 
 			return { lat: la2, lng: lo2 };
