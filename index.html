@@ -284,8 +284,8 @@
 			// Fly teigWidth (60m) in northbound direction and add to pattern
 			<!-- lastPointLat = CreateOffsetLatitude(teigCenterLat, patternWidth); -->
 			<!-- lastPointLng = CreateOffsetLongtitude(teigCenterLng, patternWidth); -->
-			lastPointLat = movePointLat(teigCenterLat,teigCenterLng,patternWidth,moveAngle);
-			lastPointLng = movePointLon(teigCenterLat,teigCenterLng,patternWidth,moveAngle);
+			lastPointLat = movePointLat(teigCenterLat,teigCenterLng,patternWidth,0);
+			lastPointLng = movePointLon(teigCenterLat,teigCenterLng,patternWidth,0);
             points.push({ lat: lastPointLat, lng: lastPointLng });
 			
 			// Add 120 degrees clockwise and move 60 m
