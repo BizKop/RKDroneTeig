@@ -297,26 +297,26 @@
             points.push({ lat: lastPointLat, lng: lastPointLng });
 			
 			// Fly teigWidth in northbound direction and add to pattern
-			lastPointLat = movePointLat(teigCenterLat,teigCenterLng,patternHeight,0);
-			lastPointLng = movePointLon(teigCenterLat,teigCenterLng,patternHeight,0);
-            points.push({ lat: lastPointLat, lng: lastPointLng });
+			<!-- lastPointLat = movePointLat(teigCenterLat,teigCenterLng,patternHeight,0); -->
+			<!-- lastPointLng = movePointLon(teigCenterLat,teigCenterLng,patternHeight,0); -->
+            <!-- points.push({ lat: lastPointLat, lng: lastPointLng }); -->
 			
 			// Add 90 degrees clockwise and move teightWidth or teigHeight
 			let intialAngle = 0, angle=0, moveAngle = 90;
-            let i = 1;
+            let i = 0;
 			
-			while (i <= 4)
+			while (i <= 3)
 			{
 				angle = intialAngle + i * moveAngle;
 				
 				
 				//check if leg is 2 or 4 (height)
-				if(i == 2 || i == 4) {
-					distance = patternWidth;
+				if(i == 0 || i == 2) {
+					distance = patternHeight;
 				}
 				else
 				{
-					distance = patternHeight;
+					distance = patternWidth;
 				}
 				
 				lastPointLat = movePointLat(lastPointLat,lastPointLng,distance,angle);
