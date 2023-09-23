@@ -344,6 +344,11 @@
 		{
 		  return degrees * (Math.PI/180);
 		}	
+		
+		function toDegrees(radians)
+		{
+		  return radians * (180/Math.PI);
+		}
 
 <!-- Let first point latitude be la1, -->
 <!-- longitude as lo1, -->
@@ -379,7 +384,7 @@
 			a = Math.atan2(Math.sin(brngRad) * Math.sin(distFrac) * Math.cos(latRad), Math.cos(distFrac) - Math.sin(latRad) * Math.sin(latitudeResult));
 			longitudeResult = (lonRad + a + 3 * Math.PI) % (2 * Math.PI) - PI;
 
-			console.log("lat: " + Math.toDegrees(latitudeResult) + ", lon: " + Math.toDegrees(longitudeResult));
+			console.log("lat: " + toDegrees(latitudeResult) + ", lon: " + toDegrees(longitudeResult));
 			return { lat: latitudeResult, lng: longitudeResult };
 
 		}
