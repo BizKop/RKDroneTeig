@@ -297,8 +297,8 @@
 			x = patternWidth * Math.sin(degrees_to_radians(angle));
             y = patternWidth * Math.cos(degrees_to_radians(angle));		
 			
-            lastpointlat = createoffsetlatitude(lastpointlat, x);
-            lastpointlng = createoffsetlongtitude(lastpointlng, y);
+            lastpointlat = CreateOffsetLatitude(lastpointlat, x);
+            lastpointlng = CreateOffsetLongtitude(lastpointlng, y);
 			
 			points.push({ lat: lastPointLat, lng: lastPointLng });
             
@@ -326,8 +326,7 @@
         }	
 		function degrees_to_radians(degrees)
 		{
-		  var pi = Math.PI;
-		  return degrees * (pi/180);
+		  return degrees * (Math.PI/180);
 		}		
 
         function CreateFlightPathArchimedesSpiral(teigCenterLat, teigCenterLng, teigWidth, teigHeight) {
