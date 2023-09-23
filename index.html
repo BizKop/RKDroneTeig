@@ -273,9 +273,8 @@
         function CreateFlightPathSector(teigCenterLat, teigCenterLng, teigWidth, teigOffset) {
 
 			// Find the center of the search pattern
-			teigCenterLat CreateOffsetLatitude(teigCenterLat, -teigOffset);
-			teigCenterLng CreateOffsetLongtitude(teigCenterLng, -teigOffset);
-			
+			teigCenterLat CreateOffsetLatitude(teigCenterLat, teigOffset);
+			teigCenterLng CreateOffsetLongtitude(teigCenterLng, teigOffset);			
 			
             <!-- // Find the corners of the rectangle based on width / height -->
             <!-- teigLowerLeftLat = CreateOffsetLatitude(teigCenterLat, -(teigWidth / 2)); -->
