@@ -95,7 +95,10 @@
         <!-- <option value="squarespiral">Square Spiral</option> -->
     </select>
 
-    Flight altitude (m):<input type="text" id="flightAltitude" value="70">
+    Flight altitude(m):<input type="text" id="flightAltitude" value="70">
+    Teig width(m):<input type="text" id="teigWidth" value="90">
+    Teig height(m):<input type="text" id="teigHeight" value="90">
+
     <br>
     <a href="javascript:initMap();" class="button4" style="background-color:#4e9af1">TakeOff center to geolocation</a>
     <a href="javascript:mapToObject();" class="button4" style="background-color:#f14e4e">Generate FlightPath</a>
@@ -116,6 +119,8 @@
         var flightPath;
         var flightPathElevations;
         var setflightAltitude;
+		var teigWidth = 90;
+		var teigHeight = 90;
         var takeOffLat;
         var takeOffLng;
         var takeOffElevation;
@@ -134,6 +139,8 @@
             takeOffLat = Number(document.getElementById("latitude").value);
             takeOffLng = Number(document.getElementById("longitude").value);
             setflightAltitude = parseInt(document.getElementById("flightAltitude").value);
+			teigWidth = parseInt(document.getElementById("teigWidth").value);
+			teigHeight = parseInt(document.getElementById("teigHeight").value);
             console.log("FlightAltitude: " + setflightAltitude);
 
             const takeOffLoc = { lat: takeOffLat, lng: takeOffLng };
@@ -176,16 +183,16 @@
                 console.log("Changing pattern to: ", event.target.value); // 👉️ get selected VALUE
                 switch (selectedPattern) {
                     case "rectangel":
-                        CreateFlightPathSquare(takeOffLat, takeOffLng, 100, 300);
+                        CreateFlightPathSquare(takeOffLat, takeOffLng, teigWidth, teigHeight);
                         break;
                     case "archspiral":
-                        CreateFlightPathArchimedesSpiral(takeOffLat, takeOffLng, 100, 300);
+                        CreateFlightPathArchimedesSpiral(takeOffLat, takeOffLng, teigWidth, teigHeight);
                         break;
                     case "squarespiral":
-                        CreateFlightPathSquareSpiral(takeOffLat, takeOffLng, 10, 10);
+                        CreateFlightPathSquareSpiral(takeOffLat, takeOffLng,teigWidth, teigHeight);
                         break;
                     case "sector":
-                        CreateFlightPathSector(takeOffLat, takeOffLng, 90, 120);
+                        CreateFlightPathSector(takeOffLat, takeOffLng, teigWidth, 120);
 //                        CreateFlightPathSector(takeOffLat, takeOffLng, 60, 120);
                         break;
                     default:
