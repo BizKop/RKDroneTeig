@@ -294,8 +294,8 @@
             let a = 10, b = 5, angle = 120;
             let x = 0, y = 0;
                 
-			x = patternWidth * Math.sin(Math.radians(angle));
-            y = patternWidth * Math.cos(Math.radians(angle));		
+			x = patternWidth * Math.sin(degrees_to_radians(angle));
+            y = patternWidth * Math.cos(degrees_to_radians(angle));		
 			
             lastpointlat = createoffsetlatitude(lastpointlat, x);
             lastpointlng = createoffsetlongtitude(lastpointlng, y);
@@ -324,7 +324,6 @@
 
             setPolylineInMap(points)
         }	
-
 		function degrees_to_radians(degrees)
 		{
 		  var pi = Math.PI;
