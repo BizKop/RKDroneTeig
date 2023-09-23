@@ -270,7 +270,7 @@
             setPolylineInMap(points)
         }
 		
-        function CreateFlightPathSector(teigCenterLat, teigCenterLng, teigWidth, teigOffset) {
+        function CreateFlightPathSector(teigCenterLat, teigCenterLng, patternWidth, teigOffset) {
 
 			// Find the center of the search pattern
 			teigCenterLat = CreateOffsetLatitude(teigCenterLat, teigOffset);
@@ -282,17 +282,27 @@
             points.push({ lat: teigCenterLat, lng: teigCenterLng });
 			
 			// Fly teigWidth (60m) in northbound direction and add to pattern
-			lastPointLat = CreateOffsetLatitude(teigCenterLat, teigOffset);
-			lastPointLng = CreateOffsetLongtitude(teigCenterLng, teigOffset);
+			lastPointLat = CreateOffsetLatitude(teigCenterLat, patternWidth);
+			lastPointLng = CreateOffsetLongtitude(teigCenterLng, patternWidth);
             points.push({ lat: lastPointLat, lng: lastPointLng });
 			
 			
-            <!-- let a = 10, b = 5, angle = 0; -->
-            <!-- let x = 0, y = 0; -->
+			// Add 120 degrees right and move 60
+			// Return the sine value of 120 degrees
+			//print(math.sin(math.radians(30)))
 			
+            let a = 10, b = 5, angle = 120;
+            let x = 0, y = 0;
+                
+			x = patternWidth * Math.sin(Math.radians(angle));
+            y = patternWidth * Math.cos(Math.radians(angle));		
 			
-
-            <!-- const acceleration = 0.7, circleNum = 1; -->
+            lastpointlat = createoffsetlatitude(lastpointlat, x);
+            lastpointlng = createoffsetlongtitude(lastpointlng, y);
+			
+			points.push({ lat: lastPointLat, lng: lastPointLng });
+            
+			//const acceleration = 0.7, circleNum = 1;
             <!-- lastPointLat = teigCenterLat; -->
             <!-- lastPointLng = teigCenterLng; -->
 
