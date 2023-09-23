@@ -283,23 +283,18 @@
 		
         function CreateFlightPathRectangleNew(teigCenterLat, teigCenterLng, patternWidth, patternHeight) {
 
-			// Find the center of the search pattern
-			teigCenterLat = CreateOffsetLatitude(teigCenterLat, patternHeight);
-			teigCenterLng = CreateOffsetLongtitude(teigCenterLng, patternHeight);
+			// Find the lower left center of the search pattern (100 m from takeoff)
+			lastPointLat = CreateOffsetLatitude(teigCenterLat, 100);
+			lastPointLng = CreateOffsetLongtitude(teigCenterLng, 100);
 
-			lastPointLat = movePointLat(teigCenterLat,teigCenterLng,patternWidth,0);
-			lastPointLng = movePointLon(teigCenterLat,teigCenterLng,patternWidth,0);
+			<!-- lastPointLat = movePointLat(teigCenterLat,teigCenterLng,patternWidth,0); -->
+			<!-- lastPointLng = movePointLon(teigCenterLat,teigCenterLng,patternWidth,0); -->
 
 			const points = [];
 			distance = patternWidth;
 			
 			//Add the lower left corner
             points.push({ lat: lastPointLat, lng: lastPointLng });
-			
-			// Fly teigWidth in northbound direction and add to pattern
-			<!-- lastPointLat = movePointLat(teigCenterLat,teigCenterLng,patternHeight,0); -->
-			<!-- lastPointLng = movePointLon(teigCenterLat,teigCenterLng,patternHeight,0); -->
-            <!-- points.push({ lat: lastPointLat, lng: lastPointLng }); -->
 			
 			// Add 90 degrees clockwise and move teightWidth or teigHeight
 			let intialAngle = 0, angle=0, moveAngle = 90;
