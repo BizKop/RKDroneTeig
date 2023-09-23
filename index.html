@@ -287,11 +287,7 @@
             points.push({ lat: lastPointLat, lng: lastPointLng });
 			
 			
-			// Add 120 degrees right and move 60
-			// Return the sine value of 120 degrees
-			//print(math.sin(math.radians(30)))
-			
-            
+			// Add 120 degrees clockwise and move 60 m
 			let angle = 90, moveangle = -120;
             let x = 0, y = 0;
 			
@@ -306,6 +302,16 @@
 			points.push({ lat: lastPointLat, lng: lastPointLng });
 			
 			
+			angle = angle + moveangle;
+			
+			x = patternWidth * Math.sin(degrees_to_radians(angle));
+            y = patternWidth * Math.cos(degrees_to_radians(angle));		
+			
+            lastPointLat = CreateOffsetLatitude(lastPointLat, x);
+            lastPointLng = CreateOffsetLongtitude(lastPointLng, y);
+			
+			points.push({ lat: lastPointLat, lng: lastPointLng });
+
             
 			//const acceleration = 0.7, circleNum = 1;
             <!-- lastPointLat = teigCenterLat; -->
