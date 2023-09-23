@@ -301,7 +301,7 @@
 //				lastPointLat = CreateOffsetLatitude(lastPointLat, 2* x);
 //				lastPointLng = CreateOffsetLongtitude(lastPointLng, 2 * y);
 				
-				points.push(destinationPoint(patternWidth, moveAngle));
+				points.push(destinationPoint(lastPointLat,lastPointLng, patternWidth, moveAngle));
 //				points.push({ lat: lastPointLat, lng: lastPointLng });
 				i++;
 			}
@@ -344,43 +344,26 @@
 		  return degrees * (Math.PI/180);
 		}	
 
-    /**
-     * Returns the destination point from ‘this’ point having travelled the given distance on the
-     * given initial bearing (bearing normally varies around path followed).
-     *
-     * @param   {number} distance - Distance travelled, in same units as earth radius (default: metres).
-     * @param   {number} bearing - Initial bearing in degrees from north.
-     * @param   {number} [radius=6371e3] - (Mean) radius of earth (defaults to radius in metres).
-     * @returns {LatLon} Destination point.
-     *
-     * @example
-     *   const p1 = new LatLon(51.47788, -0.00147);
-     *   const p2 = p1.destinationPoint(7794, 300.7); // 51.5136°N, 000.0983°W
-     */
-    function destinationPoint(distance, bearing) {
-        // sinφ2 = sinφ1⋅cosδ + cosφ1⋅sinδ⋅cosθ
-        // tanΔλ = sinθ⋅sinδ⋅cosφ1 / cosδ−sinφ1⋅sinφ2
-        // see mathforum.org/library/drmath/view/52049.html for derivation
-			<!-- R = 6378137 -->
-            <!-- Pi = 3.14159; -->
-		const radius = 6371e3;
-        const δ = distance / radius; // angular distance in radians
-        const θ = Number(bearing).toRadians();
+<!-- Let first point latitude be la1, -->
+<!-- longitude as lo1, -->
+<!-- d be distance, -->
+<!-- R as radius of Earth, -->
+<!-- angularDistance be the angular distance i.e d/R and -->
+<!-- Here is the formula to find the second point, when first point, bearing and distance is known: -->
+<!-- https://www.igismap.com/formula-to-find-bearing-or-heading-angle-between-two-points-latitude-longitude/ -->
+<!-- latitude of second point = la2 =  asin(sin la1 * cos angularDistance  + cos la1 * sin angularDistance * cos bearing), and -->
+<!-- longitude  of second point = lo2 = lo1 + atan2(sin bearing * sin Ad * cos la1 , cos Ad – sin la1 * sin la2) -->
+ 
+		function destinationPoint(la1, lo1, distance, bearing) {
+			const R = 6378137;
+			const angularDistance = distance / R; // angular distance in radians
+			
+			la2 =  Math.asin(Math.sin(la1) * Math.cos(angularDistance) + Math.cos(la1) * Math.sin(angularDistance) * Math.cos(bearing));
+			lo2 = lo1 + Math.atan2(Math.sin(bearing) * Math.sin(angularDistance) * Math.cos(la1), Math.cos(angularDistance) – Math.sin(la1) * Math.sin(la2));
 
-        const φ1 = this.lat.toRadians(), λ1 = this.lon.toRadians();
+			return { lat: la2, lng: lo2 };
+		}
 
-        const sinφ2 = Math.sin(φ1) * Math.cos(δ) + Math.cos(φ1) * Math.sin(δ) * Math.cos(θ);
-        const φ2 = Math.asin(sinφ2);
-        const y = Math.sin(θ) * Math.sin(δ) * Math.cos(φ1);
-        const x = Math.cos(δ) - Math.sin(φ1) * sinφ2;
-        const λ2 = λ1 + Math.atan2(y, x);
-
-        const lat = φ2.toDegrees();
-        const lon = λ2.toDegrees();
-
-        return { lat: lat, lng: lon };
-    }
-	
 
         function CreateFlightPathArchimedesSpiral(teigCenterLat, teigCenterLng, teigWidth, teigHeight) {
 
