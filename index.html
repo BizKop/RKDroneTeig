@@ -291,9 +291,12 @@
 			// Return the sine value of 120 degrees
 			//print(math.sin(math.radians(30)))
 			
-            let a = 10, b = 5, angle = 120;
+            
+			let angle = 90, moveangle = -120;
             let x = 0, y = 0;
-                
+			
+			angle = angle + moveangle;
+			
 			x = patternWidth * Math.sin(degrees_to_radians(angle));
             y = patternWidth * Math.cos(degrees_to_radians(angle));		
 			
@@ -301,6 +304,8 @@
             lastPointLng = CreateOffsetLongtitude(lastPointLng, y);
 			
 			points.push({ lat: lastPointLat, lng: lastPointLng });
+			
+			
             
 			//const acceleration = 0.7, circleNum = 1;
             <!-- lastPointLat = teigCenterLat; -->
