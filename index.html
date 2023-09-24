@@ -144,7 +144,7 @@
 			teigHeight = parseInt(document.getElementById("teigHeight").value);
             console.log("FlightAltitude: " + setflightAltitude);
 
-            const takeOffLoc = { lat: takeOffLat, lng: takeOffLng };
+            takeOffLoc = { lat: takeOffLat, lng: takeOffLng };
             map = new google.maps.Map(document.getElementById('map'), {
                 center: takeOffLoc,
                 zoom: 18,
@@ -215,6 +215,8 @@
         function changeTakeOffLocation() {
             takeOffLng = takeOffMarker.getPosition().lng();
             takeOffLat = takeOffMarker.getPosition().lat();
+
+            takeOffLoc = { lat: takeOffLat, lng: takeOffLng };
 
             console.log("Changed location of TakeOff to Lng: " + takeOffLng + " Lat: " + takeOffLat);
 
