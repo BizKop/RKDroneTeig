@@ -181,6 +181,14 @@
             const sel_pattern = document.getElementById('pattern-select');
             sel_pattern.addEventListener('change', function handleChange(event) {
                 selectedPattern = event.target.value;
+				
+				takeOffLat = Number(document.getElementById("latitude").value);
+				takeOffLng = Number(document.getElementById("longitude").value);
+				setflightAltitude = parseInt(document.getElementById("flightAltitude").value);
+				teigWidth = parseInt(document.getElementById("teigWidth").value);
+				teigHeight = parseInt(document.getElementById("teigHeight").value);
+				
+				
                 console.log("Changing pattern to: ", event.target.value); // 👉️ get selected VALUE
                 switch (selectedPattern) {
                     case "rectangel":
