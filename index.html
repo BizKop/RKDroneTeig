@@ -83,8 +83,8 @@
     longitude:<input type="text" id="longitude" value="10.522853115520695"> -->
 
     <!-- Vinnulstad Gård -->
-    latitude:<input type="text" id="latitude" value="59.801988">
-    longitude:<input type="text" id="longitude" value="10.425938">    
+    Latitude:<input type="text" id="latitude" value="59.801988">
+    Longitude:<input type="text" id="longitude" value="10.425938">    
     <br>
 
     <select id="pattern-select">
@@ -95,13 +95,13 @@
         <!-- <option value="squarespiral">Square Spiral</option> -->
     </select>
 
-    Flight altitude(m):<input type="text" id="flightAltitude" value="70">
+    Altitude(m):<input type="text" id="flightAltitude" value="70">
     <br>
-    Teig width(m):<input type="text" id="teigWidth" value="90">
-    Teig height(m):<input type="text" id="teigHeight" value="90">
+    Pattern width(m):<input type="text" id="teigWidth" value="90">
+    Pattern height(m):<input type="text" id="teigHeight" value="90">
 
     <br>
-    <a href="javascript:initMap();" class="button4" style="background-color:#4e9af1">TakeOff center to geolocation</a>
+    <a href="javascript:initMap();" class="button4" style="background-color:#4e9af1">Reset TakeOff to Lat-Lon</a>
     <a href="javascript:mapToObject();" class="button4" style="background-color:#f14e4e">Generate FlightPath</a>
     <a href="javascript:toKML();" class="button4" id="downloadButton" style="background-color:#f14e4e">Download KML</a>
 
@@ -184,7 +184,7 @@
                 console.log("Changing pattern to: ", event.target.value); // 👉️ get selected VALUE
                 switch (selectedPattern) {
                     case "rectangel":
-						CreateFlightPathRectangleNew(takeOffLat, takeOffLng, teigWidth, teigHeight);
+						CreateFlightPathRectangle(takeOffLat, takeOffLng, teigWidth, teigHeight);
                         //CreateFlightPathSquare(takeOffLat, takeOffLng, teigWidth, teigHeight);
                         break;
                     case "archspiral":
@@ -256,39 +256,36 @@
                 );
         }        
 
-        function CreateFlightPathSquare(teigCenterLat, teigCenterLng, teigWidth, teigHeight) {
+        <!-- function CreateFlightPathSquare(teigCenterLat, teigCenterLng, teigWidth, teigHeight) { -->
 
-            // Find the corners of the rectangle based on width / height
-            teigLowerLeftLat = CreateOffsetLatitude(teigCenterLat, -(teigWidth / 2));
-            teigLowerLeftLng = CreateOffsetLongtitude(teigCenterLng, -(teigHeight / 2));
-            teigLowerRightLat = CreateOffsetLatitude(teigCenterLat, (teigWidth / 2));
-            teigLowerRightLng = teigLowerLeftLng;
-            teigUpperLeftLat = teigLowerLeftLat;
-            teigUpperLeftLng = CreateOffsetLongtitude(teigCenterLng, (teigHeight / 2));
-            teigUpperRightLat = CreateOffsetLatitude(teigCenterLat, (teigWidth / 2));
-            teigUpperRightLng = CreateOffsetLongtitude(teigCenterLng, (teigHeight / 2));
+            <!-- // Find the corners of the rectangle based on width / height -->
+            <!-- teigLowerLeftLat = CreateOffsetLatitude(teigCenterLat, -(teigWidth / 2)); -->
+            <!-- teigLowerLeftLng = CreateOffsetLongtitude(teigCenterLng, -(teigHeight / 2)); -->
+            <!-- teigLowerRightLat = CreateOffsetLatitude(teigCenterLat, (teigWidth / 2)); -->
+            <!-- teigLowerRightLng = teigLowerLeftLng; -->
+            <!-- teigUpperLeftLat = teigLowerLeftLat; -->
+            <!-- teigUpperLeftLng = CreateOffsetLongtitude(teigCenterLng, (teigHeight / 2)); -->
+            <!-- teigUpperRightLat = CreateOffsetLatitude(teigCenterLat, (teigWidth / 2)); -->
+            <!-- teigUpperRightLng = CreateOffsetLongtitude(teigCenterLng, (teigHeight / 2)); -->
 
-            // Create array with all coordinates in rectangle
-            const points = [
-                { lat: teigLowerLeftLat, lng: teigLowerLeftLng },
-                { lat: teigUpperLeftLat, lng: teigUpperLeftLng },
-                { lat: teigUpperRightLat, lng: teigUpperRightLng },
-                { lat: teigLowerRightLat, lng: teigLowerRightLng },
-                { lat: teigLowerLeftLat, lng: teigLowerLeftLng },
-            ];
+            <!-- // Create array with all coordinates in rectangle -->
+            <!-- const points = [ -->
+                <!-- { lat: teigLowerLeftLat, lng: teigLowerLeftLng }, -->
+                <!-- { lat: teigUpperLeftLat, lng: teigUpperLeftLng }, -->
+                <!-- { lat: teigUpperRightLat, lng: teigUpperRightLng }, -->
+                <!-- { lat: teigLowerRightLat, lng: teigLowerRightLng }, -->
+                <!-- { lat: teigLowerLeftLat, lng: teigLowerLeftLng }, -->
+            <!-- ]; -->
 
-            setPolylineInMap(points)
-        }
+            <!-- setPolylineInMap(points) -->
+        <!-- } -->
 		
 		
-        function CreateFlightPathRectangleNew(teigCenterLat, teigCenterLng, patternWidth, patternHeight) {
+        function CreateFlightPathRectangle(teigCenterLat, teigCenterLng, patternWidth, patternHeight) {
 
 			// Find the lower left center of the search pattern (100 m from takeoff)
 			lastPointLat = CreateOffsetLatitude(teigCenterLat, 100);
-			lastPointLng = CreateOffsetLongtitude(teigCenterLng, 100);
-
-			<!-- lastPointLat = movePointLat(teigCenterLat,teigCenterLng,patternWidth,0); -->
-			<!-- lastPointLng = movePointLon(teigCenterLat,teigCenterLng,patternWidth,0); -->
+			lastPointLng = CreateOffsetLongtitude(teigCenterLng, 0);
 
 			const points = [];
 			distance = patternWidth;
@@ -379,20 +376,20 @@
 		  return radians * (180/Math.PI);
 		}
 
-		function movePoint(latitude, longitude, distanceInMetres, bearing) {
-			brngRad = toRadians(bearing);
-			latRad = toRadians(latitude);
-			lonRad = toRadians(longitude);
-			earthRadiusInMetres = 6371000;
-			distFrac = distanceInMetres / earthRadiusInMetres;
+		<!-- function movePoint(latitude, longitude, distanceInMetres, bearing) { -->
+			<!-- brngRad = toRadians(bearing); -->
+			<!-- latRad = toRadians(latitude); -->
+			<!-- lonRad = toRadians(longitude); -->
+			<!-- earthRadiusInMetres = 6371000; -->
+			<!-- distFrac = distanceInMetres / earthRadiusInMetres; -->
 
-			latitudeResult = Math.asin(Math.sin(latRad) * Math.cos(distFrac) + Math.cos(latRad) * Math.sin(distFrac) * Math.cos(brngRad));
-			a = Math.atan2(Math.sin(brngRad) * Math.sin(distFrac) * Math.cos(latRad), Math.cos(distFrac) - Math.sin(latRad) * Math.sin(latitudeResult));
-			longitudeResult = (lonRad + a + 3 * Math.PI) % (2 * Math.PI) - Math.PI;
+			<!-- latitudeResult = Math.asin(Math.sin(latRad) * Math.cos(distFrac) + Math.cos(latRad) * Math.sin(distFrac) * Math.cos(brngRad)); -->
+			<!-- a = Math.atan2(Math.sin(brngRad) * Math.sin(distFrac) * Math.cos(latRad), Math.cos(distFrac) - Math.sin(latRad) * Math.sin(latitudeResult)); -->
+			<!-- longitudeResult = (lonRad + a + 3 * Math.PI) % (2 * Math.PI) - Math.PI; -->
 
-			console.log("lat: " + toDegrees(latitudeResult) + ", lon: " + toDegrees(longitudeResult));
-			return { lat: toDegrees(latitudeResult), lng: toDegrees(longitudeResult) };
-		}
+			<!-- console.log("lat: " + toDegrees(latitudeResult) + ", lon: " + toDegrees(longitudeResult)); -->
+			<!-- return { lat: toDegrees(latitudeResult), lng: toDegrees(longitudeResult) }; -->
+		<!-- } -->
 
 		function movePointLat(latitude, longitude, distanceInMetres, bearing) {
 			brngRad = toRadians(bearing);
