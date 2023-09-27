@@ -338,39 +338,45 @@
 		
         function CreateFlightPathExpandingSquare(teigCenterLat, teigCenterLng, patternWidth, patternHeight) {
 
-			// Find the lower left center of the search pattern (100 m from takeoff)
-			lastPointLat = CreateOffsetLatitude(teigCenterLat, 100);
+			// Find the center of the search pattern (2 times patternWidth m from takeoff)
+			lastPointLat = CreateOffsetLatitude(teigCenterLat, 2 * patternWidth);
 			lastPointLng = CreateOffsetLongtitude(teigCenterLng, 0);
 
 			const points = [];
-			distance = patternWidth;
+			//distance = patternwidth;
 			
 			//Add the lower left corner
             points.push({ lat: lastPointLat, lng: lastPointLng });
 			
 			// Add 90 degrees clockwise and move teightWidth or teigHeight
 			let intialAngle = 0, angle=0, moveAngle = 90;
-            let i = 0;
+			let initialSideLength = 10, sideLength=10; 
+            let i = 1;
 			
-			while (i <= 3)
+			while (sideLength <= patternWidth)
 			{
-				angle = intialAngle + i * moveAngle;
 				
+				<!-- //check if leg is 2 or 4 (height) -->
+				<!-- if(i == 0 || i == 2) { -->
+					<!-- distance = patternHeight; -->
+				<!-- } -->
+				<!-- else -->
+				<!-- { -->
+					<!-- distance = patternWidth; -->
+				<!-- } -->
 				
-				//check if leg is 2 or 4 (height)
-				if(i == 0 || i == 2) {
-					distance = patternHeight;
-				}
-				else
-				{
-					distance = patternWidth;
-				}
-				
-				lastPointLat = movePointLat(lastPointLat,lastPointLng,distance,angle);
-				lastPointLng = movePointLon(lastPointLat,lastPointLng,distance,angle);
+				lastPointLat = movePointLat(lastPointLat,lastPointLng,sideLength,angle);
+				lastPointLng = movePointLon(lastPointLat,lastPointLng,sideLength,angle);
 				
 				points.push({ lat: lastPointLat, lng: lastPointLng });
+				
 				i++;
+				//check if the index is odd
+				if(i % 2 == 0) {
+					sideLength = initialSideLength * i;
+				}
+
+				angle = intialAngle + i * moveAngle;
 			}
 		
             setPolylineInMap(points)
