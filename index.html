@@ -342,7 +342,7 @@
 			// Add 90 degrees clockwise and move teightWidth or teigHeight
 			let intialAngle = 0, angle=0, moveAngle = 90;
 			let initialSideLength = 25, sideLength= 25; 
-            let i = 1;
+            let i = 0;
 			
 			while (sideLength <= patternWidth)
 			{
@@ -351,14 +351,14 @@
 				lastPointLng = movePointLon(lastPointLat,lastPointLng,sideLength,angle);
 				
 				points.push({ lat: lastPointLat, lng: lastPointLng });
-
-				angle = intialAngle + i * moveAngle;
-			
+		
 				i++;
 				//check if the index is odd
 				if(i % 2 != 0) {
 					sideLength = initialSideLength * i;
 				}
+				angle = intialAngle + i * moveAngle;
+				
 			}
 		
             setPolylineInMap(points)
