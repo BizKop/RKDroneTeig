@@ -91,6 +91,8 @@
         <option value="">-- Choose a search pattern --</option>
         <option value="rectangel">Rectangel</option>
         <option value="sector">Sector (SS3)</option>
+        <option value="parallel1">Parallel(PS1)</option>
+        <option value="parallel2">Parallel overlap(PS2)</option>
         <option value="expsquare">Expanding Square</option>
         <option value="archspiral">Archimedes Spiral</option>
         <!-- <option value="squarespiral">Square Spiral</option> -->
@@ -209,6 +211,12 @@
                     case "expsquare":
                         CreateFlightPathExpandingSquare(takeOffLat, takeOffLng, teigWidth, 120);
                         break;
+                    case "parallel1":
+                        CreateFlightPathPS1(takeOffLat, takeOffLng, teigWidth, 120);
+                        break;
+                    case "parallel2":
+                        CreateFlightPathPS2(takeOffLat, takeOffLng, teigWidth, 120);
+                        break;
                     default:
                         break;
                 }
@@ -269,32 +277,7 @@
                     console.log("Elevation service failed due to: " + e)
                 );
         }        
-
-        <!-- function CreateFlightPathSquare(teigCenterLat, teigCenterLng, teigWidth, teigHeight) { -->
-
-            <!-- // Find the corners of the rectangle based on width / height -->
-            <!-- teigLowerLeftLat = CreateOffsetLatitude(teigCenterLat, -(teigWidth / 2)); -->
-            <!-- teigLowerLeftLng = CreateOffsetLongtitude(teigCenterLng, -(teigHeight / 2)); -->
-            <!-- teigLowerRightLat = CreateOffsetLatitude(teigCenterLat, (teigWidth / 2)); -->
-            <!-- teigLowerRightLng = teigLowerLeftLng; -->
-            <!-- teigUpperLeftLat = teigLowerLeftLat; -->
-            <!-- teigUpperLeftLng = CreateOffsetLongtitude(teigCenterLng, (teigHeight / 2)); -->
-            <!-- teigUpperRightLat = CreateOffsetLatitude(teigCenterLat, (teigWidth / 2)); -->
-            <!-- teigUpperRightLng = CreateOffsetLongtitude(teigCenterLng, (teigHeight / 2)); -->
-
-            <!-- // Create array with all coordinates in rectangle -->
-            <!-- const points = [ -->
-                <!-- { lat: teigLowerLeftLat, lng: teigLowerLeftLng }, -->
-                <!-- { lat: teigUpperLeftLat, lng: teigUpperLeftLng }, -->
-                <!-- { lat: teigUpperRightLat, lng: teigUpperRightLng }, -->
-                <!-- { lat: teigLowerRightLat, lng: teigLowerRightLng }, -->
-                <!-- { lat: teigLowerLeftLat, lng: teigLowerLeftLng }, -->
-            <!-- ]; -->
-
-            <!-- setPolylineInMap(points) -->
-        <!-- } -->
-		
-		
+	
         function CreateFlightPathRectangle(teigCenterLat, teigCenterLng, patternWidth, patternHeight) {
 
 			// Find the lower left center of the search pattern (100 m from takeoff)
@@ -364,15 +347,6 @@
 			while (sideLength <= patternWidth)
 			{
 				
-				<!-- //check if leg is 2 or 4 (height) -->
-				<!-- if(i == 0 || i == 2) { -->
-					<!-- distance = patternHeight; -->
-				<!-- } -->
-				<!-- else -->
-				<!-- { -->
-					<!-- distance = patternWidth; -->
-				<!-- } -->
-				
 				lastPointLat = movePointLat(lastPointLat,lastPointLng,sideLength,angle);
 				lastPointLng = movePointLon(lastPointLat,lastPointLng,sideLength,angle);
 				
@@ -382,7 +356,7 @@
 			
 				i++;
 				//check if the index is odd
-				if(i % 2 == 0) {
+				if(i % 2 != 0) {
 					sideLength = initialSideLength * i;
 				}
 			}
