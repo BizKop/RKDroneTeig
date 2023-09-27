@@ -412,12 +412,77 @@
 						angle = westAngle;
 						nextWest = false;
 					}
+					else
+					{
+						angle = eastAngle;
+						nextWest = true;
+					}
 				}
 			}
 		
             setPolylineInMap(points)
         }	
 		
+        function CreateFlightPathPS2(teigCenterLat, teigCenterLng, patternWidth, patternHeight) {
+
+			// Find the center of the search pattern (2 times patternWidth m from takeoff)
+			patternOffset = 2 * patternWidth;
+			distance = patternWidth;	
+			
+			// Check if offset more than 200m
+			if(patternOffset > 200)
+			{
+				patternOffset = 200;
+			}
+			
+			lastPointLat = CreateOffsetLatitude(teigCenterLat, patternOffset);
+			lastPointLng = CreateOffsetLongtitude(teigCenterLng, 0);
+
+			const points = [];
+			
+			//Add the lower left corner
+            points.push({ lat: lastPointLat, lng: lastPointLng });
+			
+			let eastAngle = 90, northAngle=0, westAngle = 270;
+			let travelHeight = 0, northLength= 25; 
+            let i = 1;
+			
+			// Set first leg
+			angle = eastAngle;
+			distance = patternWidth;
+			nextWest = true;
+			
+			while (travelHeight <= patternHeight)
+			{
+				lastPointLat = movePointLat(lastPointLat,lastPointLng,distance,angle);
+				lastPointLng = movePointLon(lastPointLat,lastPointLng,distance,angle);
+				
+				points.push({ lat: lastPointLat, lng: lastPointLng });
+				i++;
+								//check if the index is odd
+				if(i % 2 == 0) {
+					distance = northLength;
+					angle = northAngle;
+					travelHeight = travelHeight + northLength;
+				}
+				else {
+					distance = patternWidth;
+					if(nextWest)
+					{
+						angle = westAngle;
+						nextWest = false;
+					}
+					else
+					{
+						angle = eastAngle;
+						nextWest = true;
+					}
+				}
+			}
+		
+            setPolylineInMap(points)
+        }	
+
 		
 		
         function CreateFlightPathSector(teigCenterLat, teigCenterLng, patternWidth, teigOffset) {
