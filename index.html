@@ -377,14 +377,14 @@
 				lastPointLng = movePointLon(lastPointLat,lastPointLng,sideLength,angle);
 				
 				points.push({ lat: lastPointLat, lng: lastPointLng });
-				
+
+				angle = intialAngle + i * moveAngle;
+			
 				i++;
 				//check if the index is odd
 				if(i % 2 == 0) {
 					sideLength = initialSideLength * i;
 				}
-
-				angle = intialAngle + i * moveAngle;
 			}
 		
             setPolylineInMap(points)
