@@ -365,15 +365,8 @@
 		
         function CreateFlightPathPS1(teigCenterLat, teigCenterLng, patternWidth, patternHeight) {
 
-			// Find the center of the search pattern (2 times patternWidth m from takeoff)
-			patternOffset = 2 * patternWidth;
-			distance = patternWidth;	
-			
-			// Check if offset more than 200m
-			if(patternOffset > 200)
-			{
-				patternOffset = 200;
-			}
+			// Find the left lower corner of the search pattern (100 m from takeoff)
+			patternOffset = 100;
 			
 			lastPointLat = CreateOffsetLatitude(teigCenterLat, patternOffset);
 			lastPointLng = CreateOffsetLongtitude(teigCenterLng, 0);
@@ -425,15 +418,8 @@
 		
         function CreateFlightPathPS2(teigCenterLat, teigCenterLng, patternWidth, patternHeight) {
 
-			// Find the center of the search pattern (2 times patternWidth m from takeoff)
-			patternOffset = 2 * patternWidth;
-			distance = patternWidth;	
-			
-			// Check if offset more than 200m
-			if(patternOffset > 200)
-			{
-				patternOffset = 200;
-			}
+			// Find the left lower corner of the search pattern (100 m from takeoff)
+			patternOffset = 100;
 			
 			lastPointLat = CreateOffsetLatitude(teigCenterLat, patternOffset);
 			lastPointLng = CreateOffsetLongtitude(teigCenterLng, 0);
