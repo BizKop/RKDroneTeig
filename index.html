@@ -334,7 +334,50 @@
 			lastPointLng = CreateOffsetLongtitude(teigCenterLng, 0);
 
 			const points = [];
-			//distance = patternwidth;
+			
+			//Add the lower left corner
+            points.push({ lat: lastPointLat, lng: lastPointLng });
+			
+			// Add 90 degrees clockwise and move teightWidth or teigHeight
+			let intialAngle = 0, angle=0, moveAngle = 90;
+			let initialSideLength = 25, sideLength= 25; 
+            let i = 1;
+			
+			while (sideLength <= patternWidth)
+			{
+				
+				lastPointLat = movePointLat(lastPointLat,lastPointLng,sideLength,angle);
+				lastPointLng = movePointLon(lastPointLat,lastPointLng,sideLength,angle);
+				
+				points.push({ lat: lastPointLat, lng: lastPointLng });
+		
+				i++;
+				//check if the index is odd
+				if(i % 2 == 0) {
+					sideLength = initialSideLength * i;
+				}
+				angle = intialAngle + i * moveAngle;
+				
+			}
+		
+            setPolylineInMap(points)
+        }	
+		
+        function CreateFlightPathPS1(teigCenterLat, teigCenterLng, patternWidth, patternHeight) {
+
+			// Find the center of the search pattern (2 times patternWidth m from takeoff)
+			patternOffset = 2 * patternWidth;
+			
+			// Check if offset more than 200m
+			if(patternOffset > 200)
+			{
+				patternOffset = 200;
+			}
+			
+			lastPointLat = CreateOffsetLatitude(teigCenterLat, patternOffset);
+			lastPointLng = CreateOffsetLongtitude(teigCenterLng, 0);
+
+			const points = [];
 			
 			//Add the lower left corner
             points.push({ lat: lastPointLat, lng: lastPointLng });
@@ -364,6 +407,7 @@
 		
             setPolylineInMap(points)
         }	
+		
 		
 		
         function CreateFlightPathSector(teigCenterLat, teigCenterLng, patternWidth, teigOffset) {
