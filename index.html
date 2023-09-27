@@ -367,6 +367,7 @@
 
 			// Find the center of the search pattern (2 times patternWidth m from takeoff)
 			patternOffset = 2 * patternWidth;
+			distance = patternWidth;	
 			
 			// Check if offset more than 200m
 			if(patternOffset > 200)
@@ -382,27 +383,36 @@
 			//Add the lower left corner
             points.push({ lat: lastPointLat, lng: lastPointLng });
 			
-			// Add 90 degrees clockwise and move teightWidth or teigHeight
-			let intialAngle = 0, angle=0, moveAngle = 90;
-			let initialSideLength = 25, sideLength= 25; 
+			let eastAngle = 90, northAngle=0, westAngle = 270;
+			let travelHeight = 0, northLength= 50; 
             let i = 1;
 			
-			while (sideLength <= patternWidth)
+			// Set first leg
+			angle = eastAngle;
+			distance = patternWidth;
+			nextWest = true;
+			
+			while (travelHeight <= patternHeight)
 			{
-				
-				lastPointLat = movePointLat(lastPointLat,lastPointLng,sideLength,angle);
-				lastPointLng = movePointLon(lastPointLat,lastPointLng,sideLength,angle);
+				lastPointLat = movePointLat(lastPointLat,lastPointLng,distance,angle);
+				lastPointLng = movePointLon(lastPointLat,lastPointLng,distance,angle);
 				
 				points.push({ lat: lastPointLat, lng: lastPointLng });
-		
 				i++;
-				
-				//check if the index is odd
-				if(i % 2 != 0) {
-					sideLength = initialSideLength * i;
+								//check if the index is odd
+				if(i % 2 == 0) {
+					distance = northLength;
+					angle = northAngle;
+					travelHeight = travelHeight + northLength;
 				}
-				angle = intialAngle + i * moveAngle;
-				
+				else {
+					distance = patternWidth;
+					if(nextWest)
+					{
+						angle = westAngle;
+						nextWest = false;
+					}
+				}
 			}
 		
             setPolylineInMap(points)
