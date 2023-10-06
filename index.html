@@ -144,8 +144,8 @@
 			var latlongstring = document.getElementById("latlong").value;
 			var latlongFields = latlongstring.split(',');
 
-			takeOffLat = latlongFields[0].trim();
-			takeOffLng = latlongFields[1].trim();
+			takeOffLat = Number(latlongFields[0].trim());
+			takeOffLng = Number(latlongFields[1].trim());
 
             <!-- takeOffLat = Number(document.getElementById("latitude").value); -->
             <!-- takeOffLng = Number(document.getElementById("longitude").value); -->
