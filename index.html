@@ -1,5 +1,4 @@
 <html>
-
 <head>
     <title>RK Droneteig</title>
     <meta name="viewport" content="initial-scale=1.0">
@@ -141,11 +140,13 @@
                 downloadButton.style = diabled;
             };
 			
-			var latlongstring = document.getElementById("latlong").value;
-			var latlongFields = latlongstring.split(',');
+			setLatLongTakeoff();
+			
+			<!-- var latlongstring = document.getElementById("latlong").value; -->
+			<!-- var latlongFields = latlongstring.split(','); -->
 
-			takeOffLat = Number(latlongFields[0].trim());
-			takeOffLng = Number(latlongFields[1].trim());
+			<!-- takeOffLat = Number(latlongFields[0].trim()); -->
+			<!-- takeOffLng = Number(latlongFields[1].trim()); -->
 
             <!-- takeOffLat = Number(document.getElementById("latitude").value); -->
             <!-- takeOffLng = Number(document.getElementById("longitude").value); -->
@@ -176,6 +177,15 @@
             // Add all listeners needed to enable moving and drawing new coords in the flightPath
             google.maps.event.addListener(takeOffMarker, 'dragend', changeTakeOffLocation);
             
+			function setLatLongTakeoff()
+			{
+				var latlongstring = document.getElementById("latlong").value;
+				var latlongFields = latlongstring.split(',');
+
+				takeOffLat = Number(latlongFields[0].trim());
+				takeOffLng = Number(latlongFields[1].trim());
+			}
+
             function LogMessage(sometext)
             {
                 console.log(sometext);
@@ -193,8 +203,9 @@
             sel_pattern.addEventListener('change', function handleChange(event) {
                 selectedPattern = event.target.value;
 				
-				takeOffLat = Number(document.getElementById("latitude").value);
-				takeOffLng = Number(document.getElementById("longitude").value);
+				setLatLongTakeoff();
+				<!-- takeOffLat = Number(document.getElementById("latitude").value); -->
+				<!-- takeOffLng = Number(document.getElementById("longitude").value); -->
 				setflightAltitude = parseInt(document.getElementById("flightAltitude").value);
 				teigWidth = parseInt(document.getElementById("teigWidth").value);
 				teigHeight = parseInt(document.getElementById("teigHeight").value);
@@ -236,12 +247,14 @@
             takeOffLng = takeOffMarker.getPosition().lng();
             takeOffLat = takeOffMarker.getPosition().lat();
 
-            takeOffLoc = { lat: takeOffLat, lng: takeOffLng };
+            takeoffLatLon = takeOffLat + ", " + takeOffLng;
+			takeOffLoc = { lat: takeOffLat, lng: takeOffLng };
 
             console.log("Changed location of TakeOff to Lng: " + takeOffLng + " Lat: " + takeOffLat);
 
             document.getElementById("latitude").value = takeOffLat;
             document.getElementById("longitude").value = takeOffLng;
+            document.getElementById("latlong").value = takeoffLatLon;
 
         }
 
