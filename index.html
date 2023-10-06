@@ -85,6 +85,7 @@
     <!-- Vinnulstad Gård -->
     Latitude:<input type="text" id="latitude" value="59.801988">
     Longitude:<input type="text" id="longitude" value="10.425938">    
+    Lat / Long:<input type="text" id="latlong" value="59.801988, 10.425938">
     <br>
 
     <select id="pattern-select">
@@ -139,10 +140,17 @@
                 downloadButton.disabled = true;
                 downloadButton.style = diabled;
             };
+			
+			var latlongstring = string(document.getElementById("latlong").value);
+			var latlongFields = latlongstring.split(',');
 
-            takeOffLat = Number(document.getElementById("latitude").value);
-            takeOffLng = Number(document.getElementById("longitude").value);
-            setflightAltitude = parseInt(document.getElementById("flightAltitude").value);
+			takeOffLat = latlongFields[0].trim();
+			takeOffLng = latlongFields[1].trim();
+
+            <!-- takeOffLat = Number(document.getElementById("latitude").value); -->
+            <!-- takeOffLng = Number(document.getElementById("longitude").value); -->
+            
+			setflightAltitude = parseInt(document.getElementById("flightAltitude").value);
 			teigWidth = parseInt(document.getElementById("teigWidth").value);
 			teigHeight = parseInt(document.getElementById("teigHeight").value);
             console.log("FlightAltitude: " + setflightAltitude);
