@@ -141,7 +141,7 @@
                 downloadButton.style = diabled;
             };
 			
-			var latlongstring = string(document.getElementById("latlong").value);
+			var latlongstring = document.getElementById("latlong").value;
 			var latlongFields = latlongstring.split(',');
 
 			takeOffLat = latlongFields[0].trim();
