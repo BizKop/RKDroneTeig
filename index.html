@@ -244,8 +244,8 @@
         }
 
         function changeTakeOffLocation() {
-            takeOffLng = takeOffMarker.getPosition().lng().substring(0, 9);
-            takeOffLat = takeOffMarker.getPosition().lat().substring(0, 9);
+            takeOffLng = String(takeOffMarker.getPosition().lng()).substring(0, 9);
+            takeOffLat = String(takeOffMarker.getPosition().lat()).substring(0, 9);
 
             takeoffLatLon = takeOffLat + ", " + takeOffLng;
 			takeOffLoc = { lat: takeOffLat, lng: takeOffLng };
