@@ -251,10 +251,12 @@
 
 		function convertGeographicToUTM(latitude, longitude) 
 		{
+			
 			<!-- var utm = require('utm'); -->
 			
 			<!-- const decimalCoords = geolib.toDecimal({ lat: latitude, lon: longitude }); -->
 			<!-- const utmResult = UTM.convertLatLngToUtm(decimalCoords.lat, decimalCoords.lon, 0); -->
+			console.log("convertGeographicToUTM: " + longitude + " Lat: " + latitude);
 			const utmResult = fromLatLon(latitude, longitude);
 			return utmResult;
 			<!-- Convert from latitude/longitude coordinates to UTM-WGS84. `zoneNum` can be set -->
