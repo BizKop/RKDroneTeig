@@ -250,11 +250,11 @@
 
 		function convertGeographicToUTM(latitude, longitude) 
 		{
-			var utm = require('utm');
+			<!-- var utm = require('utm'); -->
 			
 			<!-- const decimalCoords = geolib.toDecimal({ lat: latitude, lon: longitude }); -->
 			<!-- const utmResult = UTM.convertLatLngToUtm(decimalCoords.lat, decimalCoords.lon, 0); -->
-			const utmResult = utm.fromLatLon(latitude, longitude);
+			const utmResult = fromLatLon(latitude, longitude);
 			return utmResult;
 			<!-- Convert from latitude/longitude coordinates to UTM-WGS84. `zoneNum` can be set -->
 			<!-- to force a specific zone number. -->
@@ -263,8 +263,8 @@
 		}
 
 		function convertUTMToGeographic(easting, northing, zoneNumber, zoneLetter) {
-			var utm = require('utm');
-			const latlngResult = utm.toLatLon(easting, northing, zoneNumber, zoneLetter, "", strict = true)
+			<!-- var utm = require('utm'); -->
+			const latlngResult = toLatLon(easting, northing, zoneNumber, zoneLetter, "", strict = true)
 			<!-- const latLng = UTM.convertUtmToLatLng(easting, northing, zoneNumber, isSouthernHemisphere); -->
 			<!-- const result = geolib.useDecimal(latLng.latitude, latLng.longitude); -->
 			return latlngResult;
