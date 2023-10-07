@@ -65,6 +65,7 @@
             }
         }
     </style>
+	<script src="index.es.js" type="text/javascript"></script>
     <script src="xmlwriter.js" type="text/javascript"></script>
 </head>
 
@@ -184,6 +185,7 @@
 
 				takeOffLat = Number(latlongFields[0].trim());
 				takeOffLng = Number(latlongFields[1].trim());
+				LogMessage(convertGeographicToUTM(takeOffLat, takeOffLng);
 			}
 
             function LogMessage(sometext)
@@ -242,6 +244,31 @@
 
             });
         }
+		
+		<!-- const UTM = require('utm-latlng'); -->
+		<!-- const geolib = require('geolib'); -->
+
+		function convertGeographicToUTM(latitude, longitude) 
+		{
+			var utm = require('utm');
+			
+			<!-- const decimalCoords = geolib.toDecimal({ lat: latitude, lon: longitude }); -->
+			<!-- const utmResult = UTM.convertLatLngToUtm(decimalCoords.lat, decimalCoords.lon, 0); -->
+			const utmResult = utm.fromLatLon(latitude, longitude[, zoneNum])`
+			return utmResult;
+			<!-- Convert from latitude/longitude coordinates to UTM-WGS84. `zoneNum` can be set -->
+			<!-- to force a specific zone number. -->
+
+			<!-- Returns `{ easting, northing, zoneNum, zoneLetter }`. -->
+		}
+
+		function convertUTMToGeographic(easting, northing, zoneNumber, zoneLetter) {
+			var utm = require('utm');
+			const latlngResult = utm.toLatLon(easting, northing, zoneNumber, zoneLetter, "", strict = true)
+			<!-- const latLng = UTM.convertUtmToLatLng(easting, northing, zoneNumber, isSouthernHemisphere); -->
+			<!-- const result = geolib.useDecimal(latLng.latitude, latLng.longitude); -->
+			return latlngResult;
+		}
 
         function changeTakeOffLocation() {
             takeOffLng = String(takeOffMarker.getPosition().lng()).substring(0, 9);
