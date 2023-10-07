@@ -254,7 +254,7 @@
 			
 			<!-- const decimalCoords = geolib.toDecimal({ lat: latitude, lon: longitude }); -->
 			<!-- const utmResult = UTM.convertLatLngToUtm(decimalCoords.lat, decimalCoords.lon, 0); -->
-			const utmResult = utm.fromLatLon(latitude, longitude[, zoneNum]);
+			const utmResult = utm.fromLatLon(latitude, longitude);
 			return utmResult;
 			<!-- Convert from latitude/longitude coordinates to UTM-WGS84. `zoneNum` can be set -->
 			<!-- to force a specific zone number. -->
