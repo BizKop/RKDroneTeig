@@ -160,13 +160,14 @@ function fromLatLon(latitude, longitude, forceZoneNum) {
                                          a4 / 24 * (5 - latTan2 + 9 * c + 4 * c * c) +
                                          a6 / 720 * (61 - 58 * latTan2 + latTan4 + 600 * c - 330 * E_P2)));
   if (latitude < 0) northing += 1e7;
-
-  return {
-    easting: easting,
-    northing: northing,
-    zoneNum: zoneNum,
-    zoneLetter: zoneLetter
-  };
+  var returnValue = zoneNum + zoneLetter + "0" + toString(easting).substring(0,6) + "E " + toString(northing).substring(0,7) + "N";
+  return returnValue;
+  // return {
+    // easting: easting,
+    // northing: northing,
+    // zoneNum: zoneNum,
+    // zoneLetter: zoneLetter
+  // };
 }
 
 function latitudeToZoneLetter(latitude) {
