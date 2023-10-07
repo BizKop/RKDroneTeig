@@ -171,6 +171,7 @@ function fromLatLon(latitude, longitude, forceZoneNum) {
 
 function latitudeToZoneLetter(latitude) {
   if (-80 <= latitude && latitude <= 84) {
+	console.log("Math Floor: " + Math.floor((latitude + 80) / 8));
     return ZONE_LETTERS[Math.floor((latitude + 80) / 8)];
   } else {
     return null;
