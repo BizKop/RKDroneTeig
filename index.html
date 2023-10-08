@@ -186,7 +186,7 @@
 
 				takeOffLat = Number(latlongFields[0].trim());
 				takeOffLng = Number(latlongFields[1].trim());
-				document.getElementById("utm-txtfield").value = convertGeographicToUTM(takeOffLat, takeOffLng);
+				document.getElementById("utm-txtfield").value = fromLatLon(takeOffLat, takeOffLng);
 			}
 
             function LogMessage(sometext)
@@ -246,24 +246,15 @@
             });
         }
 		
-		<!-- const UTM = require('utm-latlng'); -->
-		<!-- const geolib = require('geolib'); -->
-
-		function convertGeographicToUTM(latitude, longitude) 
-		{
+		<!-- <!-- Convert from latitude/longitude coordinates to UTM-WGS84 --> -->
+		<!-- <!-- Returns `{ easting, northing, zoneNum, zoneLetter }`. --> -->
+		<!-- function convertGeographicToUTM(latitude, longitude)  -->
+		<!-- { -->
 			
-			<!-- var utm = require('utm'); -->
-			
-			<!-- const decimalCoords = geolib.toDecimal({ lat: latitude, lon: longitude }); -->
-			<!-- const utmResult = UTM.convertLatLngToUtm(decimalCoords.lat, decimalCoords.lon, 0); -->
-			console.log("convertGeographicToUTM: " + longitude + " Lat: " + latitude);
-			const utmResult = fromLatLon(latitude, longitude);
-			return utmResult;
-			<!-- Convert from latitude/longitude coordinates to UTM-WGS84. `zoneNum` can be set -->
-			<!-- to force a specific zone number. -->
-
-			<!-- Returns `{ easting, northing, zoneNum, zoneLetter }`. -->
-		}
+			<!-- console.log("convertGeographicToUTM: " + longitude + " Lat: " + latitude); -->
+			<!-- const utmResult = fromLatLon(latitude, longitude); -->
+			<!-- return utmResult; -->
+		<!-- } -->
 
 		function convertUTMToGeographic(easting, northing, zoneNumber, zoneLetter) {
 			<!-- var utm = require('utm'); -->
@@ -281,7 +272,7 @@
 			takeOffLoc = { lat: takeOffLat, lng: takeOffLng };
 
             console.log("Changed location of TakeOff to Lng: " + takeOffLng + " Lat: " + takeOffLat);
-			document.getElementById("utm-txtfield").value = convertGeographicToUTM(takeOffLat, takeOffLng);
+			document.getElementById("utm-txtfield").value = fromLatLon(takeOffLat, takeOffLng);
         }
 
         async function getLocationElevation(location) {
@@ -572,21 +563,6 @@
 		  return radians * (180/Math.PI);
 		}
 
-		<!-- function movePoint(latitude, longitude, distanceInMetres, bearing) { -->
-			<!-- brngRad = toRadians(bearing); -->
-			<!-- latRad = toRadians(latitude); -->
-			<!-- lonRad = toRadians(longitude); -->
-			<!-- earthRadiusInMetres = 6371000; -->
-			<!-- distFrac = distanceInMetres / earthRadiusInMetres; -->
-
-			<!-- latitudeResult = Math.asin(Math.sin(latRad) * Math.cos(distFrac) + Math.cos(latRad) * Math.sin(distFrac) * Math.cos(brngRad)); -->
-			<!-- a = Math.atan2(Math.sin(brngRad) * Math.sin(distFrac) * Math.cos(latRad), Math.cos(distFrac) - Math.sin(latRad) * Math.sin(latitudeResult)); -->
-			<!-- longitudeResult = (lonRad + a + 3 * Math.PI) % (2 * Math.PI) - Math.PI; -->
-
-			<!-- console.log("lat: " + toDegrees(latitudeResult) + ", lon: " + toDegrees(longitudeResult)); -->
-			<!-- return { lat: toDegrees(latitudeResult), lng: toDegrees(longitudeResult) }; -->
-		<!-- } -->
-
 		function movePointLat(latitude, longitude, distanceInMetres, bearing) {
 			brngRad = toRadians(bearing);
 			latRad = toRadians(latitude);
@@ -667,11 +643,8 @@
                 }
                 x += dx; y += dy;
             }
-
             setPolylineInMap(points);
         }
-
-
 
         function setPolylineInMap(points) {
 
@@ -706,10 +679,6 @@
             // Add the flightPath to the list of overlays for KML Export
             mapOverlays.push(flightPath);
 
-//            getFlightPathElevations(points);
-//            getFlightPathElevations(flightPath.getPath().Array());
-
-
             // Add all listeners needed to enable moving and drawing new coords in the flightPath
             google.maps.event.addListener(flightPath, 'dragend', getPolygonCoords);
             google.maps.event.addListener(flightPath.getPath(), 'insert_at', getPolygonCoords);
@@ -737,7 +706,6 @@
         function CreateOffsetLatitude(orgLatitude, offsetMeters) {
             //Earth’s radius, sphere
             R = 6378137;
-            Pi = 3.14159;
 
             //Coordinate offsets in radians
             dLat = offsetMeters / R;
@@ -991,14 +959,7 @@
                     for (var j = 0; j < path.length; j++) {
                         var loc = { lat: path.getAt(j).lat(), lng: path.getAt(j).lng() };
                         tmpOverlay.path[j] = loc;
-//                        points.push(loc);
                     }
-                    
-//                    tmpOverlay.path = new Array();
-//                    path = mapOverlays[i].getPath();
-//                    for (var j = 0; j < path.length; j++) {
-//                        tmpOverlay.path[j] = { lat: path.getAt(j).lat().toString(), lng: path.getAt(j).lng().toString() };
-//                    }                    
                     
                     getFlightPathElevations(points);
 
