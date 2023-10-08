@@ -179,8 +179,13 @@
             // Add all listeners needed to enable moving and drawing new coords in the flightPath
             google.maps.event.addListener(takeOffMarker, 'dragend', changeTakeOffLocation);
             
-			/* Event listener */
-			document.getElementsByName("latlong").addEventListener('change', setLatLongTakeoff);
+			let inputText = document.getElementById('latlong');
+			inputText.addEventListener('change', (event) => {
+				const thisTarget = event.target;
+				console.log('change event. (%s)', thisTarget.value);
+				setLatLongTakeoff();
+			});			
+
 
             getLocationElevation(takeOffLoc).then(
                 function(value) {takeOffElevation = value;},
