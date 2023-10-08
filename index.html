@@ -281,6 +281,7 @@
 
             console.log("Changed location of TakeOff to Lng: " + takeOffLng + " Lat: " + takeOffLat);
 			document.getElementById("utm-txtfield").value = fromLatLon(takeOffLat, takeOffLng);
+			document.getElementById("latlong").value = takeoffLatLon;
         }
 
         async function getLocationElevation(location) {
