@@ -86,7 +86,7 @@
     <!-- Latitude:<input type="text" id="latitude" value="59.801988"> -->
     <!-- Longitude:<input type="text" id="longitude" value="10.425938">     -->
     Lat / Long:<input type="text" id="latlong" value="59.801988, 10.425938">
-    UTM: <input type="text" id="utm-txtfield" value="">     -->
+    UTM: <input type="text" id="utm-txtfield" value="">
     <br>
 
     <select id="pattern-select">
@@ -186,7 +186,7 @@
 
 				takeOffLat = Number(latlongFields[0].trim());
 				takeOffLng = Number(latlongFields[1].trim());
-				LogMessage(convertGeographicToUTM(takeOffLat, takeOffLng));
+				document.getElementById("utm-txtfield").value = convertGeographicToUTM(takeOffLat, takeOffLng);
 			}
 
             function LogMessage(sometext)
@@ -281,12 +281,7 @@
 			takeOffLoc = { lat: takeOffLat, lng: takeOffLng };
 
             console.log("Changed location of TakeOff to Lng: " + takeOffLng + " Lat: " + takeOffLat);
-
-            <!-- document.getElementById("latitude").value = takeOffLat; -->
-            <!-- document.getElementById("longitude").value = takeOffLng; -->
 			document.getElementById("utm-txtfield").value = convertGeographicToUTM(takeOffLat, takeOffLng);
-			<!-- console.log(convertGeographicToUTM(takeOffLat, takeOffLng)); -->
-
         }
 
         async function getLocationElevation(location) {
