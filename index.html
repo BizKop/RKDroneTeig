@@ -180,7 +180,7 @@
             google.maps.event.addListener(takeOffMarker, 'dragend', changeTakeOffLocation);
             
 			/* Event listener */
-			document.getElementsByName("latlong")[0].addEventListener('change', setLatLongTakeoff);
+			document.getElementsByName("latlong").addEventListener('change', setLatLongTakeoff);
 
             getLocationElevation(takeOffLoc).then(
                 function(value) {takeOffElevation = value;},
