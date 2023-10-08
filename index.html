@@ -179,20 +179,8 @@
             // Add all listeners needed to enable moving and drawing new coords in the flightPath
             google.maps.event.addListener(takeOffMarker, 'dragend', changeTakeOffLocation);
             
-			function setLatLongTakeoff()
-			{
-				var latlongstring = document.getElementById("latlong").value;
-				var latlongFields = latlongstring.split(',');
-
-				takeOffLat = Number(latlongFields[0].trim());
-				takeOffLng = Number(latlongFields[1].trim());
-				document.getElementById("utm-txtfield").value = fromLatLon(takeOffLat, takeOffLng);
-			}
-
-            function LogMessage(sometext)
-            {
-                console.log(sometext);
-            }
+			/* Event listener */
+			document.getElementsByName("latlong")[0].addEventListener('change', setLatLongTakeoff);
 
             getLocationElevation(takeOffLoc).then(
                 function(value) {takeOffElevation = value;},
@@ -245,6 +233,21 @@
 
             });
         }
+
+		function setLatLongTakeoff()
+		{
+			var latlongstring = document.getElementById("latlong").value;
+			var latlongFields = latlongstring.split(',');
+
+			takeOffLat = Number(latlongFields[0].trim());
+			takeOffLng = Number(latlongFields[1].trim());
+			document.getElementById("utm-txtfield").value = fromLatLon(takeOffLat, takeOffLng);
+		}
+
+		function LogMessage(sometext)
+		{
+			console.log(sometext);
+		}
 		
 		<!-- <!-- Convert from latitude/longitude coordinates to UTM-WGS84 --> -->
 		<!-- <!-- Returns `{ easting, northing, zoneNum, zoneLetter }`. --> -->
