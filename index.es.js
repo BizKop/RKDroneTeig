@@ -28,6 +28,21 @@ var R = 6378137;
 
 var ZONE_LETTERS = 'CDEFGHJKLMNPQRSTUVWXX';
 
+function utmToLatLon(utm-string)
+{
+	utm-string.indexOf(
+	zoneNum = utm-string.substr(0,2);
+	zoneLetter = = utm-string.substr(2,1);
+	easting = utm-string.substr(utm-string.indexOf(" "),7);
+	northing = utm-string.substr(utm-string.indexOf("E "),7);
+	
+	console.log("zoneNum; " + zoneNum + " zoneLetter:" + zoneLetter + " easting:" + easting + " northing:" + northing);
+	
+	//var returnValue = zoneNum + zoneLetter + " " + ("0" + easting.toString()).substr(0,7) + "E " + northing.toString().substr(0,7) + "N";
+	return toLatLon(easting, northing, zoneNum, zoneLetter);
+}
+
+
 function toLatLon(easting, northing, zoneNum, zoneLetter, northern, strict) {
   strict = strict !== undefined ? strict : true;
 
@@ -103,10 +118,11 @@ function toLatLon(easting, northing, zoneNum, zoneLetter, northern, strict) {
                    d3 / 6 * (1 + 2 * pTan2 + c) +
                    d5 / 120 * (5 - 2 * c + 28 * pTan2 - 3 * c2 + 8 * E_P2 + 24 * pTan4)) / pCos;
 
-  return {
-    latitude: toDegrees(latitude),
-    longitude: toDegrees(longitude) + zoneNumberToCentralLongitude(zoneNum)
-  };
+  return toDegrees(latitude) + ", " + (toDegrees(longitude) + zoneNumberToCentralLongitude(zoneNum));
+  // return {
+    // latitude: toDegrees(latitude),
+    // longitude: toDegrees(longitude) + zoneNumberToCentralLongitude(zoneNum)
+  // };
 }
 
 function fromLatLon(latitude, longitude, forceZoneNum) {
