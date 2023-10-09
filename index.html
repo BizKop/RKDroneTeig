@@ -179,13 +179,17 @@
             // Add all listeners needed to enable moving and drawing new coords in the flightPath
             google.maps.event.addListener(takeOffMarker, 'dragend', changeTakeOffLocation);
             
-			let inputText = document.getElementById('latlong');
-			inputText.addEventListener('change', (event) => {
+			let inputLatLon = document.getElementById('latlong');
+			inputLatLon.addEventListener('change', (event) => {
 				const thisTarget = event.target;
-				console.log('change event. (%s)', thisTarget.value);
 				setLatLongTakeoff();
 			});			
-
+			
+			let inputUTM = document.getElementById('utm-txtfield');
+			inputUTM.addEventListener('change', (event) => {
+				const thisTarget = event.target;
+				setUTMTakeoff();
+			});	
 
             getLocationElevation(takeOffLoc).then(
                 function(value) {takeOffElevation = value;},
@@ -248,7 +252,20 @@
 			takeOffLng = Number(latlongFields[1].trim());
 			document.getElementById("utm-txtfield").value = fromLatLon(takeOffLat, takeOffLng);
 		}
+		
+		function setUTMTakeoff()
+		{
+			var utmString = document.getElementById("utm-txtfield").value;
+			var latlongstring = utmToLatLon(utmString);
+			var latlongFields = latlongstring.split(',');
 
+			takeOffLat = Number(latlongFields[0].trim());
+			takeOffLng = Number(latlongFields[1].trim());
+
+			document.getElementById("latlong").value = latlongstring;
+		}
+
+		
 		function LogMessage(sometext)
 		{
 			console.log(sometext);
