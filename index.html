@@ -165,6 +165,9 @@
                 // mapTypeId: "satellite",
                 mapTypeId: "hybrid",
 				zoomControl: true,
+				  zoomControlOptions: {
+					position: google.maps.ControlPosition.LEFT_CENTER,
+				  },				
 				mapTypeControl: true,
 				scaleControl: true,
 				streetViewControl: false,
@@ -202,7 +205,21 @@
                 function(error) {LogMessage(error);}
             );
 
-            drawingManager = new google.maps.drawing.DrawingManager();
+            drawingManager = new google.maps.drawing.DrawingManager({
+				drawingMode: google.maps.drawing.OverlayType.MARKER,
+				drawingControl: true,
+				drawingControlOptions: {
+					position: google.maps.ControlPosition.TOP_CENTER,
+					drawingModes: [
+						google.maps.drawing.OverlayType.MARKER,
+						google.maps.drawing.OverlayType.CIRCLE,
+						google.maps.drawing.OverlayType.POLYGON,
+						google.maps.drawing.OverlayType.POLYLINE,
+						google.maps.drawing.OverlayType.RECTANGLE,
+					],
+				},
+			});			
+			
             drawingManager.setMap(map);
 
             const sel_pattern = document.getElementById('pattern-select');
