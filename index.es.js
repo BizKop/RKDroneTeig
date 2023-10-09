@@ -38,6 +38,7 @@ function utmToLatLon(utmString)
 	console.log("zoneNum; " + zoneNum + " zoneLetter:" + zoneLetter + " easting:" + easting + " northing:" + northing);
 	
 	//var returnValue = zoneNum + zoneLetter + " " + ("0" + easting.toString()).substr(0,7) + "E " + northing.toString().substr(0,7) + "N";
+
 	return toLatLon(easting, northing, zoneNum, zoneLetter);
 }
 
@@ -117,7 +118,7 @@ function toLatLon(easting, northing, zoneNum, zoneLetter, northern, strict) {
                    d3 / 6 * (1 + 2 * pTan2 + c) +
                    d5 / 120 * (5 - 2 * c + 28 * pTan2 - 3 * c2 + 8 * E_P2 + 24 * pTan4)) / pCos;
 
-  return toDegrees(latitude) + ", " + (toDegrees(longitude) + zoneNumberToCentralLongitude(zoneNum));
+  return String(toDegrees(latitude)).substring(0, 9) + ", " + String((toDegrees(longitude) + zoneNumberToCentralLongitude(zoneNum))).substring(0, 9);
   // return {
     // latitude: toDegrees(latitude),
     // longitude: toDegrees(longitude) + zoneNumberToCentralLongitude(zoneNum)
