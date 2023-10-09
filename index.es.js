@@ -32,7 +32,7 @@ function utmToLatLon(utmString)
 {
 	var zoneNum = utmString.substr(0,2);
 	var zoneLetter = utmString.substr(2,1);
-	var easting = utmString.substr(utmString.indexOf(" "),7);
+	var easting = utmString.substr(utmString.indexOf(" ")+1,7);
 	var northing = utmString.substr(utmString.indexOf("E ")+2,7);
 	
 	console.log("zoneNum; " + zoneNum + " zoneLetter:" + zoneLetter + " easting:" + easting + " northing:" + northing);
