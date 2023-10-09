@@ -30,10 +30,10 @@ var ZONE_LETTERS = 'CDEFGHJKLMNPQRSTUVWXX';
 
 function utmToLatLon(utmString)
 {
-	zoneNum = utmString.substr(0,2);
-	zoneLetter = utmString.substr(2,1);
-	easting = utmString.substr(utmString.indexOf(" "),7);
-	northing = utmString.substr(utmString.indexOf("E "),7);
+	var zoneNum = utmString.substr(0,2);
+	var zoneLetter = utmString.substr(2,1);
+	var easting = utmString.substr(utmString.indexOf(" "),7);
+	var northing = utmString.substr(utmString.indexOf("E "),7);
 	
 	console.log("zoneNum; " + zoneNum + " zoneLetter:" + zoneLetter + " easting:" + easting + " northing:" + northing);
 	
