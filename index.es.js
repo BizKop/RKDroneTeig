@@ -28,13 +28,12 @@ var R = 6378137;
 
 var ZONE_LETTERS = 'CDEFGHJKLMNPQRSTUVWXX';
 
-function utmToLatLon(utm-string)
+function utmToLatLon(utmString)
 {
-	utm-string.indexOf(
-	zoneNum = utm-string.substr(0,2);
-	zoneLetter = = utm-string.substr(2,1);
-	easting = utm-string.substr(utm-string.indexOf(" "),7);
-	northing = utm-string.substr(utm-string.indexOf("E "),7);
+	zoneNum = utmString.substr(0,2);
+	zoneLetter = = utmString.substr(2,1);
+	easting = utmString.substr(utmString.indexOf(" "),7);
+	northing = utmString.substr(utmString.indexOf("E "),7);
 	
 	console.log("zoneNum; " + zoneNum + " zoneLetter:" + zoneLetter + " easting:" + easting + " northing:" + northing);
 	
