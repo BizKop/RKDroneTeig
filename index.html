@@ -101,6 +101,7 @@
     </select>
 
     Altitude(m):<input type="text" id="flightAltitude" value="70">
+    Camera Tilt(degrees):<input type="text" id="cameraTilt" value="15">
     <br>
     Pattern width(m):<input type="text" id="teigWidth" value="90">
     Pattern height(m):<input type="text" id="teigHeight" value="90">
@@ -125,6 +126,7 @@
         var flightPath;
         var flightPathElevations;
         var setflightAltitude;
+		var setCameraTilt;
 		var teigWidth = 90;
 		var teigHeight = 90;
         var takeOffLat;
@@ -154,6 +156,7 @@
             <!-- takeOffLng = Number(document.getElementById("longitude").value); -->
             
 			setflightAltitude = parseInt(document.getElementById("flightAltitude").value);
+			setCameraTilt = parseInt(document.getElementById("cameraTilt").value);
 			teigWidth = parseInt(document.getElementById("teigWidth").value);
 			teigHeight = parseInt(document.getElementById("teigHeight").value);
             console.log("FlightAltitude: " + setflightAltitude);
@@ -233,6 +236,7 @@
 				<!-- takeOffLat = Number(document.getElementById("latitude").value); -->
 				<!-- takeOffLng = Number(document.getElementById("longitude").value); -->
 				setflightAltitude = parseInt(document.getElementById("flightAltitude").value);
+				setCameraTilt = parseInt(document.getElementById("cameraTilt").value);
 				teigWidth = parseInt(document.getElementById("teigWidth").value);
 				teigHeight = parseInt(document.getElementById("teigHeight").value);
 				
@@ -922,7 +926,7 @@
                             calculatedFlightAltitude = diffElevation + flightAltitude;
                         } 
 
-                        xw.writeString(kmlObject.overlays[i].path[j].lng + "," + kmlObject.overlays[i].path[j].lat + "," + calculatedFlightAltitude);
+                        xw.writeString(kmlObject.overlays[i].path[j].lng + "," + kmlObject.overlays[i].path[j].lat + "," + calculatedFlightAltitude + "," + setCameraTilt);
                     }
                     xw.writeEndElement();
                     xw.writeEndElement();
@@ -1030,6 +1034,7 @@
             }
             kmlObject = tmpMap;
             setflightAltitude = parseInt(document.getElementById("flightAltitude").value);
+            setCameraTilt = parseInt(document.getElementById("cameraTilt").value);
             const downloadButton = document.querySelector('downloadButton');
 
             const disableButton = () => {
