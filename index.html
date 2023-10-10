@@ -101,7 +101,7 @@
     </select>
 
     Altitude(m):<input type="text" id="flightAltitude" value="70">
-    Camera Tilt(degrees):<input type="text" id="cameraTilt" value="15">
+    Camera Tilt(degrees):<input type="text" id="cameraTilt" value="75">
     <br>
     Pattern width(m):<input type="text" id="teigWidth" value="90">
     Pattern height(m):<input type="text" id="teigHeight" value="90">
@@ -801,6 +801,11 @@
         function toKML() {
             var xw = new XMLWriter('UTF-8');
             var flightAltitude = setflightAltitude;
+            var calculatedFlightAltitude;
+			var calculatedCameraTilt;
+			
+			calculatedCameraTilt = 90 - setCameraTilt;
+
             console.log("FlightAltitude: " + setflightAltitude);
             // Set default altitude to 50m if not set by user
             if (isNaN(flightAltitude)) {
@@ -811,9 +816,7 @@
                     flightAltitude = 50;
                 }
             }
-
-            var calculatedFlightAltitude;
-
+			
             const today = new Date();
             flightMissionName = "FlightMission-" + formatDate(today, 'ddmmyyyy-hhmi');
             var flightMissionLength = " - Length: " + google.maps.geometry.spherical.computeLength(flightPath.getPath()) + " meters";
@@ -926,7 +929,7 @@
                             calculatedFlightAltitude = diffElevation + flightAltitude;
                         } 
 
-                        xw.writeString(kmlObject.overlays[i].path[j].lng + "," + kmlObject.overlays[i].path[j].lat + "," + calculatedFlightAltitude + "," + setCameraTilt);
+                        xw.writeString(kmlObject.overlays[i].path[j].lng + "," + kmlObject.overlays[i].path[j].lat + "," + calculatedFlightAltitude + "," + calculatedCameraTilt);
                     }
                     xw.writeEndElement();
                     xw.writeEndElement();
