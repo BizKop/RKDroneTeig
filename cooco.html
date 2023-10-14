@@ -175,6 +175,19 @@
 	  <!-- $("#lng").val(parseFloat(pos[1])); -->
 	  convertIt();
       });
+	  
+	  
+	  $("#utm-txtfield").on("change", function(){  
+	  
+		var latlongstring = utmToLatLon($("#utm-txtfield").val());
+		var latlongFields = latlongstring.split(',');
+
+		$("#lat").val(String(latlongFields[0].trim()));
+		$("#lng").val(String(latlongFields[1].trim()));
+
+		$("#latlng").val(parseFloat($("#lat").val())+', '+parseFloat($("#lng").val())  );	    
+		convertIt();
+	  });
 
       $("#lat").on("change", function(){  
 	  $("#latlng").val(parseFloat($("#lat").val())+', '+parseFloat($("#lng").val())  );	    
@@ -202,23 +215,15 @@
 	  copy('latlng32');
       });
 
-
-
-      
       $("#delete").on("click", function(){
 	  $("#lng").val(''); 
 	  $("#lat").val('');
 	  $("#latlng").val('');
+	  $("#utm-txtfield").val('');
 	  $("#lng32").text(' ');
 	  $("#lat32").text(' ');
 	  $("#latlng32").text(' ');
-	  
-
       });
-      
-
     </script>
   </body>
-
 </html>
-
